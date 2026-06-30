@@ -1,0 +1,95 @@
+/**
+ * Mielle Kitchen - Google Sheets backend
+ * -------------------------------------------------------------
+ * Receives entries from the Mielle Kitchen app and appends each
+ * one as a row in the matching tab of "Mielle Kitchen Data".
+ *
+ * Tabs used:  Hygiene_Logs , Staff_Training , Allergens
+ * Missing tabs and header rows are created automatically.
+ *
+ * Setup: see GOOGLE_SHEETS_INTEGRATION.md
+ */
+
+// The ID is the long string in your sheet's URL between /d/ and /edit
+var SHEET_ID = '1I-JmtPMXhj5jZ7OwgZNse428PLJiUID_h_uqN_3qmjU';
+
+// Column order for each tab (Timestamp is added automatically)
+var HEADERS = {
+  Hygiene_Logs: ['Timestamp', 'Date', 'Time', 'Staff',
+    'Freezer1', 'Freezer2', 'Freezer3', 'Freezer4',
+    'Fridge1', 'Fridge2', 'Fridge3', 'Fridge4', 'Fridge5', 'Fridge6',
+    'KitchenCleaned', 'AllergenChecked', 'Notes', 'ToiletCleaned'],
+  Staff_Training: ['Timestamp', 'Date', 'Staff', 'Topics', 'Notes'],
+  Allergens: ['Timestamp', 'Supplier', 'Version', 'DateUpdated', 'Status', 'Link'],
+  Incidents: ['Timestamp', 'Type', 'Date', 'Customer', 'Contact', 'Product', 'Description', 'ReportedBy'],
+  HACCP_Plan: ['Timestamp', 'ProcessStep', 'Hazard', 'ControlMeasure', 'CriticalLimit', 'Monitoring', 'CorrectiveAction', 'Date', 'AddedBy'],
+  HACCP_Docs: ['Timestamp', 'Name', 'Link', 'AddedBy'],
+  Certificates: ['Timestamp', 'Name', 'Holder', 'Expiry', 'Link']
+};
+
+function doPost(e) {
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000); // avoid two phones writing at the same instant
+  try {
+    var body = JSON.parse(e.postData.contents);
+    var sheetName = body.sheet;
+    var data = body.data || {};
+
+    var headers = HEADERS[sheetName];
+    if (!headers) {
+      return json({ ok: false, error: 'Unknown sheet: ' + sheetName });
+    }
+
+    var ss = SpreadsheetApp.openById(SHEET_ID);
+    var sh = ss.getSheetByName(sheetName) || ss.insertSheet(sheetName);
+    ensureHeaders(sh, headers);
+
+    var row = headers.map(function (h) {
+      if (h === 'Timestamp') return new Date();
+      var v = data[h];
+      return (v === undefined || v === null) ? '' : v;
+    });
+    sh.appendRow(row);
+
+    return json({ ok: true });
+  } catch (err) {
+    return json({ ok: false, error: String(err) });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// Optional: lets you read a tab back as JSON (handy for testing).
+function doGet(e) {
+  try {
+    var sheetName = (e && e.parameter && e.parameter.sheet) || 'Hygiene_Logs';
+    var ss = SpreadsheetApp.openById(SHEET_ID);
+    var sh = ss.getSheetByName(sheetName);
+    if (!sh) return json({ ok: true, rows: [] });
+
+    var values = sh.getDataRange().getValues();
+    var headers = values.shift() || [];
+    var rows = values.map(function (r) {
+      var o = {};
+      headers.forEach(function (h, i) { o[h] = r[i]; });
+      return o;
+    });
+    return json({ ok: true, rows: rows });
+  } catch (err) {
+    return json({ ok: false, error: String(err) });
+  }
+}
+
+function ensureHeaders(sh, headers) {
+  if (sh.getLastRow() === 0) {
+    sh.appendRow(headers);
+    sh.getRange(1, 1, 1, headers.length).setFontWeight('bold');
+    sh.setFrozenRows(1);
+  }
+}
+
+function json(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}

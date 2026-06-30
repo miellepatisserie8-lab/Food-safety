@@ -1,0 +1,16 @@
+.certificates h2 { color: var(--navy); margin-bottom: 6px; }
+.cert-intro { font-size: 13px; color: #666; margin-bottom: 16px; }
+.cert-list { margin-bottom: 24px; }
+.cert-card {
+  display: flex; align-items: center; gap: 12px; background: #fff;
+  border-radius: 8px; padding: 14px; margin-bottom: 10px;
+  border-left: 4px solid var(--gold);
+}
+.cert-icon { font-size: 30px; }
+.cert-body { display: flex; flex-direction: column; }
+.cert-body strong { font-size: 14px; color: var(--navy); }
+.cert-meta { font-size: 12px; color: #666; margin: 2px 0 4px; }
+.cert-view { font-size: 13px; font-weight: bold; color: var(--navy); }
+.cert-add { background: #fff; border-radius: 8px; padding: 16px; }
+.cert-add h3 { color: var(--navy); font-size: 16px; margin-bottom: 8px; }
+.cert-help { font-size: 13px; color: #666; margin-bottom: 12px; }

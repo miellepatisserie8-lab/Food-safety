@@ -1,0 +1,121 @@
+import React, { useState } from 'react';
+import { pushRow, loadLocal, saveLocal, toIncidentRow } from '../api/sheets';
+import '../styles/Support.css';
+
+const STAFF = ['Paul', 'Eva', 'Ryan', 'Aiden'];
+const TYPES = [
+  { key: 'Food Poisoning', icon: '🤢' },
+  { key: 'Foreign Object', icon: '🍽️' },
+  { key: 'Allergic Reaction', icon: '⚠️' },
+];
+
+const blankIncident = () => ({
+  type: '',
+  date: new Date().toISOString().split('T')[0],
+  customer: '',
+  contact: '',
+  product: '',
+  description: '',
+  reportedBy: '',
+});
+
+function Support() {
+  const [incidents, setIncidents] = useState(() => loadLocal('incidents'));
+  const [form, setForm] = useState(blankIncident());
+
+  const set = (k, v) => setForm(prev => ({ ...prev, [k]: v }));
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!form.type) { alert('Please choose an incident type first.'); return; }
+    const next = [...incidents, form];
+    setIncidents(next);
+    saveLocal('incidents', next);
+    pushRow('Incidents', toIncidentRow(form));
+    alert('✓ Incident report submitted!');
+    setForm(blankIncident());
+  };
+
+  return (
+    <div className="support">
+      <h2>Support</h2>
+
+      {/* Book an audit (info / contact only) */}
+      <div className="audit-card">
+        <h3>📋 Book a Food Safety Audit</h3>
+        <p>Arrange an on-site inspection with a food safety specialist to get a
+           full view of any issues that may affect your hygiene rating.</p>
+        <p className="audit-contact">To book, contact:
+           <strong> miellepatisserie8@gmail.com</strong></p>
+      </div>
+
+      {/* Report a food complaint */}
+      <div className="incident-section">
+        <h3>⚠️ Report a Food Complaint</h3>
+        <p className="incident-help">Log any customer report of food poisoning,
+           a foreign object, or an allergic reaction.</p>
+
+        <div className="incident-types">
+          {TYPES.map(t => (
+            <button
+              type="button"
+              key={t.key}
+              className={`incident-type ${form.type === t.key ? 'selected' : ''}`}
+              onClick={() => set('type', t.key)}
+            >
+              <span className="incident-icon">{t.icon}</span>
+              <span>{t.key}</span>
+            </button>
+          ))}
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Date:</label>
+            <input type="date" value={form.date} onChange={(e) => set('date', e.target.value)} />
+          </div>
+          <div className="form-group">
+            <label>Customer Name:</label>
+            <input type="text" value={form.customer} onChange={(e) => set('customer', e.target.value)} placeholder="Customer name" />
+          </div>
+          <div className="form-group">
+            <label>Customer Contact:</label>
+            <input type="text" value={form.contact} onChange={(e) => set('contact', e.target.value)} placeholder="Phone or email" />
+          </div>
+          <div className="form-group">
+            <label>Dish / Product Involved:</label>
+            <input type="text" value={form.product} onChange={(e) => set('product', e.target.value)} placeholder="e.g. Custard tart" />
+          </div>
+          <div className="form-group">
+            <label>Description:</label>
+            <textarea value={form.description} onChange={(e) => set('description', e.target.value)} placeholder="What did the customer report?" />
+          </div>
+          <div className="form-group">
+            <label>Reported By:</label>
+            <select value={form.reportedBy} onChange={(e) => set('reportedBy', e.target.value)}>
+              <option value="">Select Staff</option>
+              {STAFF.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+          <div className="form-buttons">
+            <button type="submit" className="btn btn-primary">SUBMIT REPORT</button>
+          </div>
+        </form>
+
+        {incidents.length > 0 && (
+          <div className="incident-list">
+            <h3>Recent Reports</h3>
+            {incidents.slice(-5).reverse().map((it, idx) => (
+              <div key={idx} className="incident-item">
+                <strong>{it.type}</strong> — {it.date}
+                <div className="incident-meta">{it.product || 'No product'} · by {it.reportedBy || '—'}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default Support;

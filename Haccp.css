@@ -1,0 +1,15 @@
+// =============================================================
+//  Mielle Kitchen - configuration
+// =============================================================
+// Paste the Web App URL you get after deploying the Google
+// Apps Script (see GOOGLE_SHEETS_INTEGRATION.md, Step 4).
+// It looks like:
+//   https://script.google.com/macros/s/AKfyc.....****/exec
+//
+// Until this is filled in, the app still works: every entry is
+// saved on the device and queued, then sent automatically once
+// you add the URL and reload.
+export const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxIobm2cc0QDWsakKqf_sRPckbQL-FEhVf2cHP5SpDxAOcE0NIVy_liazL1H_juzPIl/exec';
+
+// Manager login passcode for the app (Managers only).
+export const MANAGER_PASSCODE = '1234';

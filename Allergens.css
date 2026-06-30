@@ -1,0 +1,46 @@
+import React, { useState } from 'react';
+import { MANAGER_PASSCODE } from '../config';
+import '../styles/Login.css';
+
+function Login({ onLogin }) {
+  const [code, setCode] = useState('');
+  const [error, setError] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (code === MANAGER_PASSCODE) {
+      try { localStorage.setItem('mielle_auth', '1'); } catch (err) {}
+      onLogin();
+    } else {
+      setError(true);
+      setCode('');
+    }
+  };
+
+  return (
+    <div className="login-screen">
+      <div className="login-card">
+        <h1 className="login-title">Mielle Kitchen</h1>
+        <p className="login-subtitle">Managers only</p>
+
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="passcode">Passcode</label>
+          <input
+            id="passcode"
+            type="password"
+            inputMode="numeric"
+            autoComplete="off"
+            value={code}
+            onChange={(e) => { setCode(e.target.value); setError(false); }}
+            placeholder="••••"
+            autoFocus
+          />
+          {error && <p className="login-error">Incorrect passcode</p>}
+          <button type="submit" className="login-btn">ENTER</button>
+ </form>
+ </div>
+ </div>
+  );
+}
+
+export default Login;

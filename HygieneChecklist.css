@@ -1,0 +1,161 @@
+.allergens {
+  background-color: white;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.allergens h2 {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: var(--navy);
+  border-bottom: 3px solid var(--gold);
+  padding-bottom: 8px;
+}
+
+.allergens h3 {
+  font-size: 15px;
+  margin-bottom: 12px;
+  color: var(--navy);
+}
+
+.add-supplier-form {
+  background-color: #F5F5F5;
+  padding: 16px;
+  border-radius: 6px;
+  margin-bottom: 24px;
+}
+
+.form-group {
+  margin-bottom: 12px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  font-size: 13px;
+  margin-bottom: 6px;
+  color: var(--navy);
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--light-gray);
+  border-radius: 4px;
+  font-size: 14px;
+  min-height: 44px;
+  font-family: inherit;
+}
+
+.btn {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--navy);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  min-height: 44px;
+  margin-top: 12px;
+}
+
+.btn:active {
+  background-color: #16613F;
+}
+
+.suppliers-list {
+  margin-top: 20px;
+}
+
+.supplier-card {
+  background-color: white;
+  border: 2px solid var(--light-gray);
+  border-radius: 6px;
+  padding: 14px;
+  margin-bottom: 12px;
+  border-left: 4px solid var(--light-gray);
+}
+
+.supplier-card.status-current {
+  border-left-color: var(--success);
+  background-color: #F1F8F4;
+}
+
+.supplier-card.status-overdue {
+  border-left-color: var(--warning);
+  background-color: #FFF8E1;
+}
+
+.supplier-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.supplier-header h4 {
+  font-size: 14px;
+  margin: 0;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: bold;
+  color: white;
+}
+
+.status-badge.current {
+  background-color: var(--success);
+}
+
+.status-badge.overdue {
+  background-color: var(--warning);
+  color: #333;
+}
+
+.supplier-details {
+  font-size: 12px;
+  color: #666;
+}
+
+.supplier-details p {
+  margin: 4px 0;
+}
+
+.supplier-details a {
+  color: var(--navy);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.supplier-details a:active {
+  text-decoration: underline;
+}
+
+@media (min-width: 769px) {
+  .allergens {
+    padding: 20px;
+  }
+
+  .add-supplier-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    align-items: end;
+  }
+
+  .form-group {
+    margin-bottom: 0;
+  }
+
+  .btn {
+    width: auto;
+    grid-column: 2;
+    margin-top: 20px;
+  }
+}

@@ -1,0 +1,91 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--navy);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  height: 50px;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hamburger {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hamburger:active {
+  background-color: rgba(255,255,255,0.1);
+}
+
+.logo {
+  height: 40px;
+  cursor: pointer;
+}
+
+.app-title {
+  font-size: 14px;
+  flex: 1;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.connection-status {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.connection-status.online {
+  background-color: #4CAF50;
+}
+
+.connection-status.offline {
+  background-color: #999;
+}
+
+/* Tablet */
+@media (min-width: 769px) {
+  .header {
+    height: 60px;
+    padding: 10px 16px;
+  }
+
+  .app-title {
+    font-size: 16px;
+  }
+
+  .header-right {
+    font-size: 13px;
+  }
+}

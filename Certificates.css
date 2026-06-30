@@ -1,0 +1,97 @@
+import React, { useState } from 'react';
+import '../styles/StaffTraining.css';
+
+function StaffTraining({ onSubmit, trainingData }) {
+  const staffList = ['Paul', 'Eva', 'Ryan', 'Aiden'];
+  const topics = [
+    'Allergen_Protocols',
+    'Fire_Safety',
+    'Food_Hygiene_Level2',
+    'Cold_Hot_Holding',
+    'Cleaning_Sanitation'
+  ];
+
+  const [selectedStaff, setSelectedStaff] = useState('');
+  const [selectedTopics, setSelectedTopics] = useState([]);
+  const [notes, setNotes] = useState('');
+
+  const handleTopicChange = (topic) => {
+    if (selectedTopics.includes(topic)) {
+      setSelectedTopics(selectedTopics.filter(t => t !== topic));
+    } else {
+      setSelectedTopics([...selectedTopics, topic]);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const data = {
+      staff: selectedStaff,
+      topics: selectedTopics,
+      date: new Date().toISOString().split('T')[0],
+      notes: notes
+    };
+    onSubmit(data);
+    alert('✓ Training logged!');
+    setSelectedStaff('');
+    setSelectedTopics([]);
+    setNotes('');
+  };
+
+  return (
+    <div className="staff-training">
+      <h2>Staff Training</h2>
+
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label>Staff Member:</label>
+          <select value={selectedStaff} onChange={(e) => setSelectedStaff(e.target.value)} required>
+            <option value="">Select Staff</option>
+            {staffList.map(staff => (
+              <option key={staff} value={staff}>{staff}</option>
+            ))}
+ </select>
+ </div>
+
+        <div className="form-group">
+          <label>Training Topics:</label>
+          <div className="checkbox-group">
+            {topics.map(topic => (
+              <label key={topic}>
+                <input
+                  type="checkbox"
+                  checked={selectedTopics.includes(topic)}
+                  onChange={() => handleTopicChange(topic)}
+                />
+                {topic.replace(/_/g, ' ')}
+ </label>
+            ))}
+ </div>
+ </div>
+
+        <div className="form-group">
+          <label>Notes:</label>
+          <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Training notes..." />
+ </div>
+
+        <div className="form-buttons">
+          <button type="submit" className="btn btn-primary">LOG TRAINING</button>
+ </div>
+ </form>
+
+      {trainingData.length > 0 && (
+        <div className="training-list">
+          <h3>Training History</h3>
+          {trainingData.slice(-5).reverse().map((entry, idx) => (
+            <div key={idx} className="training-item">
+              <strong>{entry.staff}</strong> - {entry.date}
+              <div className="topics">{entry.topics.join(', ')}</div>
+ </div>
+          ))}
+ </div>
+      )}
+ </div>
+  );
+}
+
+export default StaffTraining;

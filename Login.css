@@ -1,0 +1,57 @@
+:root {
+  --navy: #0B3D2E;
+  --gold: #B8860B;
+  --ivory: #F5F5F5;
+  --light-gray: #E0E0E0;
+  --dark-text: #333;
+  --success: #4CAF50;
+  --warning: #FFC107;
+  --error: #F44336;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Calibri', 'Arial', sans-serif;
+  background-color: var(--ivory);
+  color: var(--dark-text);
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  margin-top: 60px;
+}
+
+/* Mobile First */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 12px;
+    margin-top: 50px;
+  }
+}
+
+/* Tablet */
+@media (min-width: 769px) {
+  .main-content {
+    padding: 20px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .main-content {
+    padding: 24px;
+  }
+}

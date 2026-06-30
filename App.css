@@ -1,0 +1,39 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import '../styles/Navigation.css';
+
+function Navigation({ isOpen, onClose, onLogout }) {
+  const menuItems = [
+    { path: '/', label: '🏠  Home' },
+    { path: '/hygiene', label: '📋  Hygiene Checklist' },
+    { path: '/training', label: '🎓  Staff Training' },
+    { path: '/allergens', label: '🥜  Allergens' },
+    { path: '/dashboard', label: '📊  Dashboard' },
+    { path: '/haccp', label: '🛡️  HACCP' },
+    { path: '/certificates', label: '🏅  Certificates' },
+    { path: '/support', label: '🎧  Support' },
+  ];
+
+  return (
+    <>
+      {isOpen && <div className="nav-overlay" onClick={onClose}></div>}
+      <nav className={`navigation ${isOpen ? 'open' : ''}`}>
+        <button className="nav-close" onClick={onClose}>✕</button>
+        <ul className="nav-menu">
+          {menuItems.map((item) => (
+            <li key={item.path}>
+              <Link to={item.path} onClick={onClose}>{item.label}</Link>
+ </li>
+          ))}
+ </ul>
+        {onLogout && (
+          <button className="nav-logout" onClick={onLogout}>
+            Log out
+ </button>
+        )}
+ </nav>
+ </>
+  );
+}
+
+export default Navigation;
