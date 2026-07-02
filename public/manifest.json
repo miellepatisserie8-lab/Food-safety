@@ -1,0 +1,8 @@
+{
+  "short_name": "Mielle Kitchen",
+  "name": "Mielle Kitchen Safety",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#0B3D2E",
+  "background_color": "#F5F5F5"
+}
