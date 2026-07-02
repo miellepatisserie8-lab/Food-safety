@@ -1,3 +1,4 @@
+import Guide from "../components/Guide";
 import React, { useState } from "react";
 
 function dayKey(d) {
@@ -33,6 +34,7 @@ export default function History({ history, refreshHistory, onBack }) {
       <button className="back" onClick={onBack}>‹ Back</button>
       <h2>Records & history</h2>
       <p className="lead">Last 28 days. Green = full day complete, amber = partial, red = nothing recorded. Show this screen to an inspector.</p>
+      <Guide id="history" />
 
       <div className="today-strip" style={{ flexWrap: "wrap" }}>
         {cells.map((c) => (

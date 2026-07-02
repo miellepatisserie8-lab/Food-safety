@@ -1,3 +1,4 @@
+import Guide from "../components/Guide";
 import React, { useState } from "react";
 import { FOOD_TEMP_TYPES } from "../config";
 import { api } from "../api";
@@ -11,6 +12,7 @@ export default function FoodTemps({ staff, showToast, refreshHistory, onBack }) 
         <button className="back" onClick={onBack}>‹ Back</button>
         <h2>Food probe temperatures</h2>
         <p className="lead">Probe the core of the food. Clean and sanitise the probe before and after each use.</p>
+      <Guide id="food" />
         {FOOD_TEMP_TYPES.map((t) => (
           <button className="tap-card" key={t.id} onClick={() => setSel(t)}>
             <div className="icon">{t.icon}</div>

@@ -1,3 +1,4 @@
+import Guide from "../components/Guide";
 import React, { useState } from "react";
 import { DELIVERY_LIMITS } from "../config";
 import { api } from "../api";
@@ -50,6 +51,7 @@ export default function Deliveries({ staff, showToast, refreshHistory, onBack })
       <button className="back" onClick={onBack}>‹ Back</button>
       <h2>Delivery / goods-in</h2>
       <p className="lead">Check every delivery before signing. Keep the supplier's allergen spec sheet on file for any new product.</p>
+      <Guide id="deliveries" />
 
       <label className="fl">Supplier</label>
       <input value={supplier} onChange={(e) => setSupplier(e.target.value)} placeholder="e.g. Beer Trading Company, dim sum supplier" />

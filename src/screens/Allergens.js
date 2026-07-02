@@ -1,3 +1,4 @@
+import Guide from "../components/Guide";
 import React from "react";
 
 const ALLERGENS = [
@@ -17,6 +18,7 @@ export default function Allergens({ onBack }) {
         The 14 allergens under Natasha's Law. Always check the current bilingual allergen sheets for each dish,
         and request a spec sheet from every dim sum supplier before switching products.
       </p>
+      <Guide id="allergens" />
       {ALLERGENS.map(([en, zh]) => (
         <div className="card" key={en} style={{ display: "flex", justifyContent: "space-between" }}>
           <strong>{en}</strong>

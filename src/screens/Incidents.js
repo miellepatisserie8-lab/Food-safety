@@ -1,3 +1,4 @@
+import Guide from "../components/Guide";
 import React, { useState } from "react";
 import { INCIDENT_TYPES } from "../config";
 import { api } from "../api";
@@ -28,6 +29,7 @@ export default function Incidents({ staff, showToast, refreshHistory, onBack }) 
         <button className="back" onClick={onBack}>‹ Back</button>
         <h2>Record an incident</h2>
         <p className="lead">Select the incident type.</p>
+      <Guide id="incidents" />
         {INCIDENT_TYPES.map((t) => (
           <button className="tap-card" key={t} onClick={() => setType(t)}>
             <div className="icon">⚠️</div>

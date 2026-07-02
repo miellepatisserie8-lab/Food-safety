@@ -1,3 +1,4 @@
+import Guide from "../components/Guide";
 import React, { useState } from "react";
 import { CLEANING_TASKS } from "../config";
 import { api } from "../api";
@@ -25,6 +26,7 @@ export default function Cleaning({ staff, showToast, refreshHistory, history }) 
     <div className="screen">
       <h2>Cleaning schedule</h2>
       <p className="lead">Tap a task once it's cleaned and sanitised. Each sign-off is recorded with your name and time.</p>
+      <Guide id="cleaning" />
 
       {FREQS.map((f) => (
         <div key={f}>

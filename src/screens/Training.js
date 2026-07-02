@@ -1,3 +1,4 @@
+import Guide from "../components/Guide";
 import React, { useState } from "react";
 import { api } from "../api";
 
@@ -44,6 +45,7 @@ export default function Training({ staff, showToast, refreshHistory, onBack }) {
       <button className="back" onClick={onBack}>‹ Back</button>
       <h2>Staff training</h2>
       <p className="lead">Log completed training. Recorded by {staff || "—"}.</p>
+      <Guide id="training" />
 
       <label className="fl">Staff member trained</label>
       <input value={trainee} onChange={(e) => setTrainee(e.target.value)} placeholder="Name" />

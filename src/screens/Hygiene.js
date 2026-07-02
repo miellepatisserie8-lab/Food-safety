@@ -1,3 +1,4 @@
+import Guide from "../components/Guide";
 import React, { useState } from "react";
 import { api } from "../api";
 
@@ -46,6 +47,7 @@ export default function Hygiene({ staff, showToast, refreshHistory, onBack }) {
       <button className="back" onClick={onBack}>‹ Back</button>
       <h2>Hygiene checklist</h2>
       <p className="lead">Weekly walk-round. Anything marked No needs a note and action.</p>
+      <Guide id="hygiene" />
       {ITEMS.map((item, i) => (
         <div className={`check-row ${answers[i] === "yes" ? "done" : ""} ${answers[i] === "no" ? "no" : ""}`} key={i}>
           <div className="grow label">{item}</div>

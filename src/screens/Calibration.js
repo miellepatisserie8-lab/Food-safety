@@ -1,3 +1,4 @@
+import Guide from "../components/Guide";
 import React, { useState } from "react";
 import { api } from "../api";
 
@@ -44,6 +45,7 @@ export default function Calibration({ staff, showToast, refreshHistory, onBack }
         Monthly check. Ice water should read 0°C (±1°C). Boiling water should read 100°C (±1°C).
         A probe outside tolerance must be replaced or recalibrated before use.
       </p>
+      <Guide id="calibration" />
 
       <label className="fl">Probe</label>
       <select value={probe} onChange={(e) => setProbe(e.target.value)}>

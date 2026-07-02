@@ -1,3 +1,4 @@
+import Guide from "../components/Guide";
 import React, { useState } from "react";
 import { APPLIANCES } from "../config";
 import { api } from "../api";
@@ -15,6 +16,7 @@ export default function TempLogs(props) {
     <div className="screen">
       <h2>Temperatures</h2>
       <p className="lead">Appliance readings morning and evening, food probe checks during service, probe calibration monthly.</p>
+      <Guide id="temps" />
       <button className="tap-card" onClick={() => setView("appliances")}>
         <div className="icon">🧊</div>
         <div className="grow">
@@ -52,6 +54,7 @@ function ApplianceTemps({ staff, showToast, refreshHistory, onBack }) {
         <button className="back" onClick={onBack}>‹ Back</button>
         <h2>Appliance temperatures</h2>
         <p className="lead">Record fridge, freezer and cellar temperatures — morning and evening.</p>
+        <Guide id="appliance" />
         {APPLIANCES.map((a) => (
           <button className="tap-card" key={a.id} onClick={() => setSel(a)}>
             <div className="icon">{a.type === "freezer" ? "❄️" : a.type === "cellar" ? "🍺" : "🧊"}</div>

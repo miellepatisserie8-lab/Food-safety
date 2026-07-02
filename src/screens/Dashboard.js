@@ -1,3 +1,4 @@
+import Guide from "../components/Guide";
 import React from "react";
 
 function dayKey(d) {
@@ -38,6 +39,7 @@ export default function Dashboard({ staff, history, goto }) {
     <div className="screen">
       <h2>{staff ? `Hi ${staff} 👋` : "Welcome"}</h2>
       <p className="lead">Today's food safety tasks at a glance.</p>
+      <Guide id="dashboard" />
 
       <div className="section-title">Last 7 days</div>
       <div className="today-strip">

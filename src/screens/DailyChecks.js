@@ -1,3 +1,4 @@
+import Guide from "../components/Guide";
 import React, { useState } from "react";
 import { OPENING_CHECKS, CLOSING_CHECKS } from "../config";
 import { api } from "../api";
@@ -14,6 +15,7 @@ export default function DailyChecks(props) {
       <div className="screen">
         <h2>Daily checks</h2>
         <p className="lead">Opening checks before service, closing checks before lock-up, and a log for every delivery.</p>
+        <Guide id="checks" />
         <button className="tap-card" onClick={() => setMode("opening")}>
           <div className="icon">🌅</div>
           <div className="grow">
