@@ -55,7 +55,7 @@ export default function App() {
         <div className="brandline">
           <div>
             <h1>Mielle <span>Kitchen Safety</span></h1>
-            <div className="sub">Unit 4, 51 Blossom Street, Ancoats</div>
+            <div className="sub">Ancoats</div>
           </div>
           <button className="staff-chip" onClick={() => setPickerOpen(true)}>
             {staff ? `👤 ${staff}` : "Who's on?"}
