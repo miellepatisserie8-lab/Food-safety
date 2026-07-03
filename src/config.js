@@ -31,9 +31,11 @@ export const BRAND = {
 
 // Appliances for temperature logging. Edit to match the kitchen.
 export const APPLIANCES = [
+    { id: "barfridge", name: "Bar Fridge", type: "fridge", min: 0, max: 8 },
   { id: "fridge1", name: "Fridge 1 (Kitchen)", type: "fridge", min: 0, max: 8 },
   { id: "fridge2", name: "Fridge 2 (Cake Display)", type: "fridge", min: 0, max: 8 },
   { id: "freezer1", name: "Freezer 1", type: "freezer", min: -25, max: -18 },
+    { id: "freezer2", name: "Freezer 2", type: "freezer", min: -25, max: -18 },
   { id: "cellar", name: "Cellar Cooler", type: "cellar", min: 11, max: 13 },
 ];
 
