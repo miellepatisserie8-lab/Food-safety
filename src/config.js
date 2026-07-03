@@ -99,3 +99,5 @@ export const INCIDENT_TYPES = [
   "Accident / injury",
   "Other",
 ];
+
+export const SHEET_URL = process.env.REACT_APP_GOOGLE_SHEET_URL || "";
