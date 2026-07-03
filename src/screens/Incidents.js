@@ -30,13 +30,14 @@ export default function Incidents({ staff, showToast, refreshHistory, onBack }) 
         <h2>Record an incident</h2>
         <p className="lead">Select the incident type.</p>
       <Guide id="incidents" />
-        {INCIDENT_TYPES.map((t) => (
-          <button className="tap-card" key={t} onClick={() => setType(t)}>
-            <div className="icon">⚠️</div>
-            <div className="grow"><div className="t">{t}</div></div>
-            <span className="chev">›</span>
-          </button>
-        ))}
+        <div className="tile-grid">
+          {INCIDENT_TYPES.map((t) => (
+            <button className="tile-card" key={t} onClick={() => setType(t)}>
+              <div className="tile-icon">⚠️</div>
+              <div className="tile-t">{t}</div>
+            </button>
+          ))}
+        </div>
       </div>
     );
   }
