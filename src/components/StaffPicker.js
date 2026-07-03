@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { api } from "../api";
 import { STAFF_PINS } from "../config";
 
-const FALLBACK = ["Paul", "Eva", "Ryan", "Aiden"];
+const FALLBACK = ["Manager", "Paul", "Eva", "Ryan", "Aiden"];
 
 export default function StaffPicker({ current, onPick, onClose }) {
   const [names, setNames] = useState(FALLBACK);
