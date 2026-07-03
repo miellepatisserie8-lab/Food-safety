@@ -42,16 +42,16 @@ export default function Dashboard({ staff, history, goto }) {
       <Guide id="dashboard" />
 
       <div className="section-title">Today</div>
-      {tasks.map((task, i) => (
-        <button className="tap-card" key={i} onClick={() => goto(task.id)}>
-          <div className="icon">{task.icon}</div>
-          <div className="grow">
-            <div className="t">{task.title}</div>
-            <div className="d">{task.desc}</div>
-          </div>
-          <span className={`pill ${task.done ? "ok" : "due"}`}>{task.done ? "Done" : "Due"}</span>
-        </button>
-      ))}
+      <div className="today-grid">
+        {tasks.map((task, i) => (
+          <button className="tile-card" key={i} onClick={() => goto(task.id)}>
+            <span className={`tile-pill ${task.done ? "ok" : "due"}`}>{task.done ? "Done" : "Due"}</span>
+            <div className="tile-icon">{task.icon}</div>
+            <div className="tile-t">{task.title}</div>
+            <div className="tile-d">{task.desc}</div>
+          </button>
+        ))}
+      </div>
 
       {history && history.error && (
         <div className="warn">Records aren't loading: {history.error}</div>
