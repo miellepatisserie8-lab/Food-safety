@@ -41,16 +41,6 @@ export default function Dashboard({ staff, history, goto }) {
       <p className="lead">Today's food safety tasks at a glance.</p>
       <Guide id="dashboard" />
 
-      <div className="section-title">Last 7 days</div>
-      <div className="today-strip">
-        {strip.map((s) => (
-          <div className="day-dot" key={s.k}>
-            <div className={`c ${s.cls}`}>{s.mark}</div>
-            {s.label}
-          </div>
-        ))}
-      </div>
-
       <div className="section-title">Today</div>
       {tasks.map((task, i) => (
         <button className="tap-card" key={i} onClick={() => goto(task.id)}>
@@ -66,6 +56,16 @@ export default function Dashboard({ staff, history, goto }) {
       {history && history.error && (
         <div className="warn">Records aren't loading: {history.error}</div>
       )}
+
+      <div className="section-title">Last 7 days</div>
+      <div className="today-strip">
+        {strip.map((s) => (
+          <div className="day-dot" key={s.k}>
+            <div className={`c ${s.cls}`}>{s.mark}</div>
+            {s.label}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
