@@ -17,30 +17,23 @@ export default function TempLogs(props) {
       <h2>Temperatures</h2>
       <p className="lead">Appliance readings morning and evening, food probe checks during service, probe calibration monthly.</p>
       <Guide id="temps" />
-      <button className="tap-card" onClick={() => setView("appliances")}>
-        <div className="icon">🧊</div>
-        <div className="grow">
-          <div className="t">Appliance temperatures</div>
-          <div className="d">Fridges, freezer and cellar cooler</div>
-        </div>
-        <span className="chev">›</span>
-      </button>
-      <button className="tap-card" onClick={() => setView("food")}>
-        <div className="icon">🍳</div>
-        <div className="grow">
-          <div className="t">Food probe checks</div>
-          <div className="d">Cooking, reheating, hot holding, cooling</div>
-        </div>
-        <span className="chev">›</span>
-      </button>
-      <button className="tap-card" onClick={() => setView("calibration")}>
-        <div className="icon">🌡️</div>
-        <div className="grow">
-          <div className="t">Probe calibration</div>
-          <div className="d">Monthly ice water / boiling water test</div>
-        </div>
-        <span className="chev">›</span>
-      </button>
+      <div className="tile-grid">
+        <button className="tile-card" onClick={() => setView("appliances")}>
+          <div className="tile-icon">🧊</div>
+          <div className="tile-t">Appliance temperatures</div>
+          <div className="tile-d">Fridges, freezer and cellar cooler</div>
+        </button>
+        <button className="tile-card" onClick={() => setView("food")}>
+          <div className="tile-icon">🍳</div>
+          <div className="tile-t">Food probe checks</div>
+          <div className="tile-d">Cooking, reheating, hot holding, cooling</div>
+        </button>
+        <button className="tile-card" onClick={() => setView("calibration")}>
+          <div className="tile-icon">🌡️</div>
+          <div className="tile-t">Probe calibration</div>
+          <div className="tile-d">Monthly ice water / boiling water test</div>
+        </button>
+      </div>
     </div>
   );
 }
@@ -55,16 +48,15 @@ function ApplianceTemps({ staff, showToast, refreshHistory, onBack }) {
         <h2>Appliance temperatures</h2>
         <p className="lead">Record fridge, freezer and cellar temperatures — morning and evening.</p>
         <Guide id="appliance" />
-        {APPLIANCES.map((a) => (
-          <button className="tap-card" key={a.id} onClick={() => setSel(a)}>
-            <div className="icon">{a.type === "freezer" ? "❄️" : a.type === "cellar" ? "🍺" : "🧊"}</div>
-            <div className="grow">
-              <div className="t">{a.name}</div>
-              <div className="d">Safe range {a.min}°C to {a.max}°C</div>
-            </div>
-            <span className="chev">›</span>
-          </button>
-        ))}
+        <div className="tile-grid">
+          {APPLIANCES.map((a) => (
+            <button className="tile-card" key={a.id} onClick={() => setSel(a)}>
+              <div className="tile-icon">{a.type === "freezer" ? "❄️" : a.type === "cellar" ? "🍺" : "🧊"}</div>
+              <div className="tile-t">{a.name}</div>
+              <div className="tile-d">Safe range {a.min}°C to {a.max}°C</div>
+            </button>
+          ))}
+        </div>
       </div>
     );
   }
