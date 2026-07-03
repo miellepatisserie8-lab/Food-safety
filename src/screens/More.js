@@ -33,16 +33,15 @@ export default function More(props) {
     <div className="screen">
       <h2>More</h2>
       <p className="lead">Records, training, allergens and manager tools.</p>
-      {ITEMS.map((it) => (
-        <button className="tap-card" key={it.id} onClick={() => setView(it.id)}>
-          <div className="icon">{it.icon}</div>
-          <div className="grow">
-            <div className="t">{it.title}</div>
-            <div className="d">{it.desc}</div>
-          </div>
-          <span className="chev">›</span>
-        </button>
-      ))}
+      <div className="tile-grid">
+        {ITEMS.map((it) => (
+          <button className="tile-card" key={it.id} onClick={() => setView(it.id)}>
+            <div className="tile-icon">{it.icon}</div>
+            <div className="tile-t">{it.title}</div>
+            <div className="tile-d">{it.desc}</div>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
