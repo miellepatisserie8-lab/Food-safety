@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { MANAGER_PASSCODE } from "../config";
+import { MANAGER_PASSCODE, FIRE_MARSHAL_CONTACT, MANAGER_PHONE } from "../config";
 
 export default function Manager({ onBack }) {
   const [code, setCode] = useState("");
@@ -48,17 +48,17 @@ export default function Manager({ onBack }) {
         <strong>Fire safety</strong>
         <p style={{ fontSize: 14, margin: "6px 0 0" }}>
           Assembly point: end of Naval Street on the Bengal Street crossover.<br />
-          Deputy Fire Marshal: Ryan Chan — 07835 268903.<br />
-          Manager on duty: 07514 272558.<br />
+          Deputy Fire Marshal: {FIRE_MARSHAL_CONTACT || "Not set — add REACT_APP_FIRE_MARSHAL_CONTACT in Vercel"}.<br />
+          Manager on duty: {MANAGER_PHONE || "Not set — add REACT_APP_MANAGER_PHONE in Vercel"}.<br />
           Evacuation drill: last Wednesday of each month.<br />
           Electric cooking only — <strong>no gas on the premises</strong>.
         </p>
       </div>
 
       <div className="card">
-        <strong>Data & records</strong>
+        <strong>Data &amp; records</strong>
         <p style={{ fontSize: 14, margin: "6px 0 0" }}>
-          All records save to the "Mielle Kitchen Data" Google Sheet. Open the sheet directly to export CSVs
+          All records save to your connected Google Sheet. Open it directly to export CSVs
           for an EHO inspection or the new fire risk assessment (due 30 September 2026).
         </p>
       </div>
