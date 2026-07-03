@@ -42,7 +42,7 @@ export default function Dashboard({ staff, history, goto }) {
       <Guide id="dashboard" />
 
       <div className="section-title">Today</div>
-      <div className="today-grid">
+      <div className="tile-grid">
         {tasks.map((task, i) => (
           <button className="tile-card" key={i} onClick={() => goto(task.id)}>
             <span className={`tile-pill ${task.done ? "ok" : "due"}`}>{task.done ? "Done" : "Due"}</span>
