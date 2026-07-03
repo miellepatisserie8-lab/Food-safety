@@ -53,7 +53,8 @@ export default function App() {
     <div className="app">
       <header className="header">
         <div className="brandline">
-          <div>
+          <div className="spacer" aria-hidden="true"></div>
+          <div className="brand-center">
             <h1>Mielle <span>Kitchen Safety</span></h1>
             <div className="sub">Ancoats</div>
           </div>
