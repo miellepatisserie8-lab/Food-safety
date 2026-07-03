@@ -13,16 +13,15 @@ export default function FoodTemps({ staff, showToast, refreshHistory, onBack }) 
         <h2>Food probe temperatures</h2>
         <p className="lead">Probe the core of the food. Clean and sanitise the probe before and after each use.</p>
       <Guide id="food" />
-        {FOOD_TEMP_TYPES.map((t) => (
-          <button className="tap-card" key={t.id} onClick={() => setSel(t)}>
-            <div className="icon">{t.icon}</div>
-            <div className="grow">
-              <div className="t">{t.name}</div>
-              <div className="d">{t.rule}</div>
-            </div>
-            <span className="chev">›</span>
-          </button>
-        ))}
+        <div className="tile-grid">
+          {FOOD_TEMP_TYPES.map((t) => (
+            <button className="tile-card" key={t.id} onClick={() => setSel(t)}>
+              <div className="tile-icon">{t.icon}</div>
+              <div className="tile-t">{t.name}</div>
+              <div className="tile-d">{t.rule}</div>
+            </button>
+          ))}
+        </div>
       </div>
     );
   }
