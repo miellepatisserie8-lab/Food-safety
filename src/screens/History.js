@@ -1,5 +1,6 @@
 import Guide from "../components/Guide";
 import React, { useState } from "react";
+import { SHEET_URL } from "../config";
 
 function dayKey(d) {
   return d.toISOString().slice(0, 10);
@@ -80,6 +81,17 @@ export default function History({ history, refreshHistory, onBack }) {
         </div>
       ))}
 
+      {SHEET_URL && (
+        <a
+          className="btn"
+          href={SHEET_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ textDecoration: "none", textAlign: "center", display: "block" }}
+        >
+          📊 View the data in Google Sheets
+        </a>
+      )}
       <button className="btn ghost" onClick={refreshHistory}>Refresh records</button>
     </div>
   );
