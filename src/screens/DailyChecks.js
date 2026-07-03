@@ -16,30 +16,23 @@ export default function DailyChecks(props) {
         <h2>Daily checks</h2>
         <p className="lead">Opening checks before service, closing checks before lock-up, and a log for every delivery.</p>
         <Guide id="checks" />
-        <button className="tap-card" onClick={() => setMode("opening")}>
-          <div className="icon">🌅</div>
-          <div className="grow">
-            <div className="t">Opening checks</div>
-            <div className="d">{OPENING_CHECKS.length} items · before service</div>
-          </div>
-          <span className="chev">›</span>
-        </button>
-        <button className="tap-card" onClick={() => setMode("closing")}>
-          <div className="icon">🌙</div>
-          <div className="grow">
-            <div className="t">Closing checks</div>
-            <div className="d">{CLOSING_CHECKS.length} items · before lock-up</div>
-          </div>
-          <span className="chev">›</span>
-        </button>
-        <button className="tap-card" onClick={() => setMode("delivery")}>
-          <div className="icon">📦</div>
-          <div className="grow">
-            <div className="t">Delivery / goods-in</div>
-            <div className="d">Check and record every delivery on arrival</div>
-          </div>
-          <span className="chev">›</span>
-        </button>
+        <div className="tile-grid">
+          <button className="tile-card" onClick={() => setMode("opening")}>
+            <div className="tile-icon">🌅</div>
+            <div className="tile-t">Opening checks</div>
+            <div className="tile-d">{OPENING_CHECKS.length} items · before service</div>
+          </button>
+          <button className="tile-card" onClick={() => setMode("closing")}>
+            <div className="tile-icon">🌙</div>
+            <div className="tile-t">Closing checks</div>
+            <div className="tile-d">{CLOSING_CHECKS.length} items · before lock-up</div>
+          </button>
+          <button className="tile-card" onClick={() => setMode("delivery")}>
+            <div className="tile-icon">📦</div>
+            <div className="tile-t">Delivery / goods-in</div>
+            <div className="tile-d">Check and record every delivery on arrival</div>
+          </button>
+        </div>
       </div>
     );
   }
