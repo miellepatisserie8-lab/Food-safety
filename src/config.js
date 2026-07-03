@@ -3,6 +3,19 @@
 export const SCRIPT_URL = process.env.REACT_APP_GOOGLE_SCRIPT_URL || "";
 export const MANAGER_PASSCODE = process.env.REACT_APP_MANAGER_PASSCODE || "";
 
+// Optional per-staff PINs for accountability when signing off checks.
+// Format in Vercel: REACT_APP_STAFF_PINS = "Paul:1234,Eva:2345,Ryan:3456,Aiden:4567"
+// If a name has no PIN configured here, picking that name needs no PIN (unchanged behaviour).
+export const STAFF_PINS = (() => {
+  const raw = process.env.REACT_APP_STAFF_PINS || "";
+  const map = {};
+  raw.split(",").forEach((pair) => {
+    const [name, pin] = pair.split(":").map((s) => (s || "").trim());
+    if (name && pin) map[name] = pin;
+  });
+  return map;
+})();
+
 export const BRAND = {
   navy: "#0B3D2E",
   gold: "#B8860B",
