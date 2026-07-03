@@ -90,7 +90,7 @@ Calibrate monthly using the Probe calibration log: ice water 0°C (±1°C) and b
   {
     id: 11,
     title: "Incidents, complaints & recall",
-    body: `Record every food incident (alleged food poisoning, allergen issue, foreign object, undercooked food) in the Incidents log with the action taken. Inform the manager on duty (07514 272558) immediately.
+    body: `Record every food incident (alleged food poisoning, allergen issue, foreign object, undercooked food) in the Incidents log with the action taken. Inform the manager on duty immediately.
 
 In a product recall or food alert: stop using the product, quarantine remaining stock, check FSA alerts, contact the supplier, and record all actions. Serious incidents may need to be reported to Manchester City Council Environmental Health.`,
   },
@@ -127,13 +127,14 @@ export default function Documents({ onBack }) {
         Mielle Patisserie's food safety management system — the written safe methods behind the daily checks.
         Show this section, with the Records & history diary, at an EHO inspection.
       </p>
-      {DOCS.map((d) => (
-        <button className="tap-card" key={d.id} onClick={() => setOpen(d.id)}>
-          <div className="icon">📄</div>
-          <div className="grow"><div className="t">{d.id}. {d.title}</div></div>
-          <span className="chev">›</span>
-        </button>
-      ))}
+      <div className="tile-grid">
+        {DOCS.map((d) => (
+          <button className="tile-card" key={d.id} onClick={() => setOpen(d.id)}>
+            <div className="tile-icon">📄</div>
+            <div className="tile-t">{d.id}. {d.title}</div>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
