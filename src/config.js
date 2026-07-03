@@ -16,6 +16,13 @@ export const STAFF_PINS = (() => {
   return map;
 })();
 
+// Manager-area emergency contacts. This repo is public, so real names/numbers
+// live only in Vercel env vars, never in committed code.
+// REACT_APP_FIRE_MARSHAL_CONTACT e.g. "Ryan Chan — 07835 268903"
+// REACT_APP_MANAGER_PHONE e.g. "07514 272558"
+export const FIRE_MARSHAL_CONTACT = process.env.REACT_APP_FIRE_MARSHAL_CONTACT || "";
+export const MANAGER_PHONE = process.env.REACT_APP_MANAGER_PHONE || "";
+
 export const BRAND = {
   navy: "#0B3D2E",
   gold: "#B8860B",
