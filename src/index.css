@@ -209,13 +209,13 @@ label.fl { display: block; font-size: 12.5px; font-weight: 700; color: var(--mut
   border: 1.5px dashed var(--gold);
   background: #fdfaf2;
   border-radius: var(--radius);
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 .guide-toggle {
   display: flex; justify-content: space-between; align-items: center; gap: 8px;
   width: 100%; background: none; border: none; cursor: pointer;
-  padding: 12px 14px; font-size: 13.5px; font-weight: 700; color: var(--navy);
-  text-align: left; min-height: 46px;
+  padding: 8px 11px; font-size: 12px; font-weight: 700; color: var(--navy);
+  text-align: left; min-height: 34px;
 }
-.guide-list { margin: 0; padding: 0 14px 12px 30px; }
-.guide-list li { font-size: 13.5px; line-height: 1.5; margin-bottom: 8px; color: var(--ink); }
+.guide-list { margin: 0; padding: 0 11px 9px 24px; }
+.guide-list li { font-size: 12px; line-height: 1.4; margin-bottom: 5px; color: var(--ink); }
