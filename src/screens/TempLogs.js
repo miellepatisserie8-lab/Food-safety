@@ -38,62 +38,54 @@ export default function TempLogs(props) {
   );
 }
 
-function ApplianceTemps({ staff, showToast, refreshHistory, onBack }) {
-  const [sel, setSel] = useState(null);
-
-  if (!sel) {
-    return (
-      <div className="screen">
-        <button className="back" onClick={onBack}>‹ Back</button>
-        <h2>Appliance temperatures</h2>
-        <p className="lead">Record fridge, freezer and cellar temperatures — morning and evening.</p>
-        <Guide id="appliance" />
-        <div className="tile-grid">
-          {APPLIANCES.map((a) => (
-            <button className="tile-card" key={a.id} onClick={() => setSel(a)}>
-              <div className="tile-icon">{a.type === "freezer" ? "❄️" : a.type === "cellar" ? "🍺" : "🧊"}</div>
-              <div className="tile-t">{a.name}</div>
-              <div className="tile-d">Safe range {a.min}°C to {a.max}°C</div>
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <TempForm
-      appliance={sel}
-      staff={staff}
-      showToast={showToast}
-      refreshHistory={refreshHistory}
-      onBack={() => setSel(null)}
-    />
-  );
+function mid(a) {
+  return Math.round((a.min + a.max) / 2);
 }
 
-function TempForm({ appliance, staff, showToast, refreshHistory, onBack }) {
-  const mid = Math.round((appliance.min + appliance.max) / 2);
-  const [temp, setTemp] = useState(String(mid));
-  const [action, setAction] = useState("");
-  const [notInUse, setNotInUse] = useState(false);
+function ApplianceTemps({ staff, showToast, refreshHistory, onBack }) {
+  const [temps, setTemps] = useState(() => {
+    const init = {};
+    APPLIANCES.forEach((a) => {
+      init[a.id] = String(mid(a));
+    });
+    return init;
+  });
+  const [actions, setActions] = useState({});
   const [saving, setSaving] = useState(false);
 
-  const val = parseFloat(temp);
-  const valid = !isNaN(val);
-  const pass = valid && val >= appliance.min && val <= appliance.max;
+  const barFridges = APPLIANCES.filter((a) => a.id.startsWith("barfridge"));
+  const others = APPLIANCES.filter((a) => !a.id.startsWith("barfridge"));
 
-  const save = async () => {
+  const setTemp = (id, v) => setTemps((t) => ({ ...t, [id]: v }));
+  const setAction = (id, v) => setActions((a) => ({ ...a, [id]: v }));
+
+  const statusFor = (a) => {
+    const val = parseFloat(temps[a.id]);
+    const valid = !isNaN(val);
+    const pass = valid && val >= a.min && val <= a.max;
+    return { val, valid, pass };
+  };
+
+  const allValid = APPLIANCES.every((a) => statusFor(a).valid);
+  const missingActions = APPLIANCES.some((a) => {
+    const { valid, pass } = statusFor(a);
+    return valid && !pass && !(actions[a.id] || "").trim();
+  });
+
+  const saveAll = async () => {
     setSaving(true);
     try {
-      await api.logTemp({
-        staff,
-        appliance: appliance.name,
-        tempC: notInUse ? "" : val,
-        status: notInUse ? "not-in-use" : pass ? "pass" : "fail",
-        action: pass || notInUse ? "" : action,
-      });
-      showToast(`${appliance.name} logged ✓`);
+      for (const a of APPLIANCES) {
+        const { val, valid, pass } = statusFor(a);
+        await api.logTemp({
+          staff,
+          appliance: a.name,
+          tempC: valid ? val : "",
+          status: valid ? (pass ? "pass" : "fail") : "fail",
+          action: pass ? "" : actions[a.id] || "",
+        });
+      }
+      showToast("All readings saved ✓");
       refreshHistory();
       onBack();
     } catch (e) {
@@ -103,46 +95,74 @@ function TempForm({ appliance, staff, showToast, refreshHistory, onBack }) {
     }
   };
 
-  return (
-    <div className="screen">
-      <button className="back" onClick={onBack}>‹ Back</button>
-      <h2>{appliance.name}</h2>
-      <div className="range-hint">Safe range: {appliance.min}°C to {appliance.max}°C</div>
-
-      {!notInUse && (
-        <div className="card">
-          <div className={`temp-read ${valid ? (pass ? "pass" : "fail") : ""}`}>
+  const MiniCard = ({ a }) => {
+    const { val, valid, pass } = statusFor(a);
+    return (
+      <div className="mini-temp-card">
+        <div className="mini-temp-head">
+          <div className="tile-icon">{a.type === "freezer" ? "❄️" : a.type === "cellar" ? "🍺" : "🧊"}</div>
+          <div>
+            <div className="mini-t">{a.name}</div>
+            <div className="mini-d">Safe range {a.min}°C to {a.max}°C</div>
+          </div>
+        </div>
+        <div className="mini-temp-body">
+          <input
+            className="vslider"
+            type="range"
+            min={a.min - 10}
+            max={a.max + 10}
+            step="0.5"
+            value={valid ? val : mid(a)}
+            onChange={(e) => setTemp(a.id, e.target.value)}
+          />
+          <div className={`mini-read ${valid ? (pass ? "pass" : "fail") : ""}`}>
             <span className="val">{valid ? val : "–"}</span>
             <span className="unit">°C</span>
           </div>
-          <input
-            type="range"
-            min={appliance.min - 10}
-            max={appliance.max + 10}
-            step="0.5"
-            value={valid ? val : mid}
-            onChange={(e) => setTemp(e.target.value)}
-          />
-          <label className="fl">Or type the probe reading</label>
-          <input type="number" inputMode="decimal" step="0.1" value={temp} onChange={(e) => setTemp(e.target.value)} />
-          {valid && !pass && (
-            <>
-              <div className="warn">
-                Temperature is outside the safe range. Move high-risk food, check the unit, and record the action taken.
-              </div>
-              <label className="fl">Remedial action taken</label>
-              <textarea value={action} onChange={(e) => setAction(e.target.value)} placeholder="e.g. moved stock to Fridge 2, engineer called…" />
-            </>
-          )}
         </div>
-      )}
+        <label className="fl">Or type the probe reading</label>
+        <input
+          type="number"
+          inputMode="decimal"
+          step="0.1"
+          value={temps[a.id]}
+          onChange={(e) => setTemp(a.id, e.target.value)}
+        />
+        {valid && !pass && (
+          <>
+            <div className="warn small">Out of range — record the action taken.</div>
+            <textarea
+              className="mini-action"
+              value={actions[a.id] || ""}
+              onChange={(e) => setAction(a.id, e.target.value)}
+              placeholder="Action taken…"
+            />
+          </>
+        )}
+      </div>
+    );
+  };
 
-      <label className="fl" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <input type="checkbox" style={{ width: "auto" }} checked={notInUse} onChange={(e) => setNotInUse(e.target.checked)} />
-        Unit not in use today
-      </label>
-
-      <button className="btn" disabled={saving || (!notInUse && (!valid || (!pass && !action.trim())))} onClick={save}>
+  return (
+    <div className="screen">
+      <button className="back" onClick={onBack}>‹ Back</button>
+      <h2>Appliance temperatures</h2>
+      <p className="lead">Record fridge, freezer and cellar temperatures — morning and evening.</p>
+      <Guide id="appliance" />
+      <div className="temp-columns">
+        <div className="temp-col">
+          {barFridges.map((a) => (
+            <MiniCard a={a} key={a.id} />
+          ))}
+        </div>
+        <div className="temp-col">
+          {others.map((a) => (
+            <MiniCard a={a} key={a.id} />
+          ))}
+        </div>
+      </div>
+      <button className="btn" disabled={saving || !allValid || missingActions} onClick={saveAll}>
         {saving ? "Saving…" : "Save reading"}
       </button>
     </div>
