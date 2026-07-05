@@ -18,10 +18,8 @@ async function get(action, params = {}) {
 }
 
 export const api = {
+  // Food safety (v2)
   logTemp: (row) => post("logTemp", row),
-  logFoodTemp: (row) => post("logFoodTemp", row),
-  logDelivery: (row) => post("logDelivery", row),
-  logCalibration: (row) => post("logCalibration", row),
   logFoodTemp: (row) => post("logFoodTemp", row),
   logDelivery: (row) => post("logDelivery", row),
   logCalibration: (row) => post("logCalibration", row),
@@ -32,4 +30,15 @@ export const api = {
   logTraining: (row) => post("logTraining", row),
   getHistory: (days = 31) => get("getHistory", { days }),
   getStaff: () => get("getStaff"),
+
+  // Cake orders (v3)
+  getOrders: () => get("getOrders"),
+  addOrder: (order) => post("addOrder", order),
+  updateOrder: (patch) => post("updateOrder", patch), // patch must include { id }
+
+  // Shared allergen products (v3 — moved from on-device to the Sheet)
+  getProducts: () => get("getProducts"),
+  seedProducts: (products) => post("seedProducts", { products }),
+  saveProduct: (product) => post("saveProduct", product),
+  deleteProduct: (id) => post("deleteProduct", { id }),
 };

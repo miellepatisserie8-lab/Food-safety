@@ -1,5 +1,7 @@
 import Guide from "../components/Guide";
 import React, { useEffect, useMemo, useState } from "react";
+import { api } from "../api";
+import { loadSharedProducts, newId } from "../products";
 
 const ALLERGENS = [
   ["Celery", "芹菜"], ["Cereals containing gluten", "含麩質穀物"], ["Crustaceans", "甲殼類"],
@@ -9,131 +11,9 @@ const ALLERGENS = [
   ["Tree nuts", "堅果"],
 ];
 
-const SEED_PRODUCTS = [
-  ["Biscoff Tart", "Tarts", ["Cereals containing gluten", "Soybeans", "Milk", "Tree nuts"], []],
-  ["Fruits Berry Tart", "Tarts", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Strawberry Tart", "Tarts", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Passion Fruit Tart", "Tarts", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Pistachio Tart", "Tarts", ["Cereals containing gluten", "Eggs", "Milk", "Tree nuts"], []],
-  ["Paris Brest / Wheel Choux", "Choux", ["Cereals containing gluten", "Eggs", "Milk", "Tree nuts"], []],
-  ["Strawberry Puff", "Choux", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["2-Mixed Cakes Party Collection", "Party Sets", ["Cereals containing gluten", "Eggs", "Milk"], ["Peanuts", "Tree nuts", "Sesame"]],
-  ["Jelly Cat Christmas Tree", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Mont Blanc Chestnut", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Ube Purple Yam Cake", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Blueberry Cheesecake", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Orange Chocolate Cake", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Chocolate Labubu", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Oreo Cake", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Black Sesame Cake", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Matcha Labubu", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Capybara Cake", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Bubble Barbie Cake", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Monster Cake", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Taro Cake", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Fresh Mango Cake", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Ferrero Chocolate Cake", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Barbie Cake", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Strawberry Cake", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Taro Labubu", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Black Forest Heart Cake", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["6 Red Velvet Heart", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Tiramisu Cake", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Chestnut Cake", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Fresh Mango Heart Cake", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Doraemon Cake", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Wine Barrel Cake", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["2- Mixed Cakes Party Collection", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Matcha Slice Cake", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], ["Peanuts", "Tree nuts"]],
-  ["Matcha swirl Swiss Roll", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Orange Chiffon Sando Cake", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["Orange Chiffon Mini Shortcake", "Cakes", ["Cereals containing gluten", "Eggs", "Milk"], []],
-  ["6-Mixed Puff Party Collection", "Party Sets", ["Cereals containing gluten", "Eggs", "Milk"], ["Peanuts", "Tree nuts"]],
-  ["Earl Grey Spritz", "Cocktail", ["Sulphur dioxide / sulphites"], []],
-  ["Jasmine 75", "Cocktail", ["Sulphur dioxide / sulphites"], []],
-  ["Lychee Oolong Cooler", "Cocktail", ["Sulphur dioxide / sulphites"], []],
-  ["Matcha White Russian", "Cocktail", ["Milk", "Sulphur dioxide / sulphites"], []],
-  ["Yuzu Margarita", "Cocktail", ["Sulphur dioxide / sulphites"], []],
-  ["Sichuan Spice Paloma", "Cocktail", ["Sulphur dioxide / sulphites"], ["Mustard"]],
-  ["Ginger Lemongrass Mule", "Cocktail", ["Sulphur dioxide / sulphites"], []],
-  ["Plum Negroni", "Cocktail", ["Sulphur dioxide / sulphites"], []],
-  ["Espresso Martini", "Cocktail", ["Sulphur dioxide / sulphites"], []],
-  ["Black Sesame Old Fashioned", "Cocktail", ["Sesame", "Sulphur dioxide / sulphites"], ["Tree nuts"]],
-  ["Jasmine Elderflower Spritz", "Mocktail", [], ["Sulphur dioxide / sulphites"]],
-  ["Yuzu Lemonade", "Mocktail", [], []],
-  ["Lychee Rose Soda", "Mocktail", [], []],
-  ["Matcha Latte (Non-Alcoholic)", "Mocktail / Hot", ["Milk"], []],
-  ["Passion Fruit & Mango Fizz", "Mocktail", [], []],
-  ["Ginger & Honey Lemonade", "Mocktail", [], []],
-  ["House White Wine (Glass)", "Wine", ["Sulphur dioxide / sulphites"], []],
-  ["House Red Wine (Glass)", "Wine", ["Sulphur dioxide / sulphites"], []],
-  ["Prosecco / Sparkling Wine", "Wine", ["Sulphur dioxide / sulphites"], []],
-  ["Orange Wine (Glass)", "Wine", ["Sulphur dioxide / sulphites"], []],
-  ["Dessert Wine / Pedro Ximénez", "Wine", ["Sulphur dioxide / sulphites"], []],
-  ["Plum Wine", "Wine / Spirit", ["Sulphur dioxide / sulphites"], []],
-  ["Gin (House Pour)", "Spirit", ["Sulphur dioxide / sulphites"], ["Tree nuts"]],
-  ["Vodka (House Pour)", "Spirit", ["Sulphur dioxide / sulphites"], []],
-  ["Tequila / Mezcal", "Spirit", ["Sulphur dioxide / sulphites"], []],
-  ["Bourbon / Whisky", "Spirit", ["Sulphur dioxide / sulphites"], []],
-  ["Campari / Aperitivo", "Spirit / Liqueur", ["Sulphur dioxide / sulphites"], []],
-  ["Coffee Liqueur (Kahlúa style)", "Liqueur", ["Sulphur dioxide / sulphites"], []],
-  ["Fresh Lime (Wedge / Juice)", "Garnish", [], []],
-  ["Fresh Lemon (Slice / Twist)", "Garnish", [], []],
-  ["Fresh Orange (Slice / Peel)", "Garnish", [], []],
-  ["Fresh Passion Fruit", "Garnish", [], []],
-  ["Fresh Mango (Slice / Purée)", "Garnish / Ingredient", [], []],
-  ["Lychee (Fresh / Tinned)", "Garnish", [], ["Sulphur dioxide / sulphites"]],
-  ["Fresh Mint (Sprig)", "Garnish", [], []],
-  ["Dehydrated Citrus Wheel", "Garnish", [], ["Sulphur dioxide / sulphites"]],
-  ["Edible Flowers", "Garnish", [], []],
-  ["Salt Rim (Fine Sea Salt)", "Garnish", [], []],
-  ["Coffee Beans (3-bean garnish)", "Garnish", [], []],
-  ["Sesame Seeds (Black/White)", "Garnish", ["Sesame"], []],
-  ["Coconut Flakes", "Garnish / Ingredient", [], ["Tree nuts"]],
-  ["Prawn Dumplings (Har Gow)", "Dim Sum", ["Cereals containing gluten", "Crustaceans", "Soybeans"], ["Milk", "Sesame"]],
-  ["Siu Mai (Pork & Prawn Dumpling)", "Dim Sum", ["Cereals containing gluten", "Crustaceans", "Soybeans"], ["Fish", "Milk", "Sesame"]],
-  ["Goldfish Dumpling", "Dim Sum", ["Cereals containing gluten", "Crustaceans", "Soybeans"], ["Milk", "Sesame"]],
-  ["Prawn & Chive Dumpling", "Dim Sum", ["Cereals containing gluten", "Crustaceans", "Soybeans"], ["Milk", "Celery", "Sesame"]],
-  ["Spring Roll", "Fried", ["Cereals containing gluten", "Soybeans"], ["Milk", "Sesame"]],
-  ["Spicy Seaweed Roll", "Rolled", ["Cereals containing gluten", "Soybeans"], ["Fish", "Sesame", "Molluscs"]],
-  ["Seaweed Roll", "Rolled", ["Cereals containing gluten", "Soybeans"], ["Fish", "Sesame", "Molluscs"]],
-  ["Xiao Long Bao (Shanghai Soup Dumpling)", "Dim Sum", ["Cereals containing gluten", "Soybeans"], ["Milk", "Sesame"]],
-  ["Chicken Skewers", "Skewers / Grilled", ["Soybeans", "Sesame"], ["Milk", "Mustard"]],
-  ["Prawn Toast", "Fried", ["Cereals containing gluten", "Crustaceans", "Eggs", "Soybeans", "Sesame"], ["Milk"]],
-  ["Mini Mandu (Korean Dumpling)", "Dim Sum / Korean", ["Cereals containing gluten", "Soybeans"], ["Eggs", "Milk", "Sesame"]],
-  ["Chicken Gyoza", "Pan-fried", ["Cereals containing gluten", "Soybeans", "Sesame"], ["Milk", "Celery"]],
-  ["Handbag Pastry", "Pastry / Baked", ["Cereals containing gluten", "Eggs", "Milk"], ["Soybeans", "Sesame"]],
-  ["Orange Bun", "Baked Bun", ["Cereals containing gluten", "Eggs", "Milk"], ["Soybeans"]],
-  ["Korean Bun (Soboro / Cream Bun)", "Baked Bun / Korean", ["Cereals containing gluten", "Eggs", "Milk"], ["Soybeans", "Tree nuts", "Sesame"]],
-  ["Olives", "Bar Snack / Nibbles", ["Sulphur dioxide / sulphites"], []],
-  ["Cheese Platter", "Bar Snack / Sharing", ["Cereals containing gluten", "Milk"], ["Sulphur dioxide / sulphites"]],
-  ["Wonton Soup", "Soup / Noodles", ["Cereals containing gluten", "Crustaceans", "Soybeans"], ["Fish", "Milk", "Celery", "Sesame"]],
-  ["Water Dumplings (Shui Jiao)", "Dim Sum / Boiled", ["Cereals containing gluten", "Soybeans"], ["Milk", "Sesame"]],
-];
-const STORAGE_KEY = "mielle_fs_products_v2";
-
-function newId() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-}
-
-function loadProducts() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch {
-    // fall through to seed
-  }
-  return SEED_PRODUCTS.map(([name, category, contains, may]) => ({
-    id: newId(),
-    name,
-    category,
-    contains,
-    may,
-  }));
-}
-
-export default function Allergens({ onBack }) {
-  const [products, setProducts] = useState(loadProducts);
+export default function Allergens({ onBack, showToast }) {
+  const [products, setProducts] = useState([]);
+  const [source, setSource] = useState("loading"); // loading | sheet | cache | seed
   const [editingId, setEditingId] = useState(null); // null | "new" | product id
   const [formName, setFormName] = useState("");
   const [formCategory, setFormCategory] = useState("");
@@ -142,8 +22,17 @@ export default function Allergens({ onBack }) {
   const [query, setQuery] = useState("");
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
-  }, [products]);
+    let live = true;
+    loadSharedProducts().then(({ products, source, migrated }) => {
+      if (!live) return;
+      setProducts(products);
+      setSource(source);
+      if (migrated && showToast) showToast(`Moved ${migrated} product(s) from this device to the shared list ✅`);
+    });
+    return () => { live = false; };
+  }, []);
+
+  const readOnly = source !== "sheet";
 
   const startAdd = () => {
     setEditingId("new");
@@ -179,23 +68,39 @@ export default function Allergens({ onBack }) {
     setFormContains((cur) => cur.filter((a) => a !== en));
   };
 
-  const saveForm = () => {
+  const saveForm = async () => {
     const name = formName.trim();
     if (!name) return;
     const category = formCategory.trim();
-    if (editingId === "new") {
-      setProducts((cur) => [...cur, { id: newId(), name, category, contains: formContains, may: formMay }]);
-    } else {
-      setProducts((cur) =>
-        cur.map((p) => (p.id === editingId ? { ...p, name, category, contains: formContains, may: formMay } : p))
-      );
-    }
+    const record = {
+      id: editingId === "new" ? newId() : editingId,
+      name, category, contains: formContains, may: formMay,
+    };
+    // optimistic update, then persist to the shared Sheet
+    setProducts((cur) =>
+      editingId === "new" ? [...cur, record] : cur.map((p) => (p.id === editingId ? { ...p, ...record } : p))
+    );
     cancelForm();
+    try {
+      await api.saveProduct(record);
+      showToast && showToast("Saved to the shared list ✅");
+    } catch (e) {
+      showToast && showToast("Not saved — " + e.message);
+      const { products: fresh } = await loadSharedProducts();
+      setProducts(fresh);
+    }
   };
 
-  const removeProduct = (id) => {
-    if (window.confirm("Remove this product from the list?")) {
-      setProducts((cur) => cur.filter((p) => p.id !== id));
+  const removeProduct = async (id) => {
+    if (!window.confirm("Remove this product from the shared list on every device?")) return;
+    setProducts((cur) => cur.filter((p) => p.id !== id));
+    try {
+      await api.deleteProduct(id);
+      showToast && showToast("Removed ✅");
+    } catch (e) {
+      showToast && showToast("Not removed — " + e.message);
+      const { products: fresh } = await loadSharedProducts();
+      setProducts(fresh);
     }
   };
 
@@ -233,8 +138,16 @@ export default function Allergens({ onBack }) {
       <div className="section-title">Products & dishes</div>
       <p className="lead" style={{ marginTop: -6 }}>
         Quick on-the-spot reference for which allergens each product contains, loaded from the full menu allergen sheets.
-        Saved on this device — the official signed record is still the allergen matrix spreadsheets on file.
+        Shared across every device — saved to the Google Sheet (Allergen_Products tab). The official signed record is
+        still the allergen matrix spreadsheets on file.
       </p>
+
+      {source === "loading" && <div className="empty small">Loading the shared product list…</div>}
+      {readOnly && source !== "loading" && (
+        <div className="warn small">
+          Offline — showing the last saved copy. Adding and editing needs a connection.
+        </div>
+      )}
 
       <input
         type="text"
@@ -270,10 +183,12 @@ export default function Allergens({ onBack }) {
                 <strong>{p.name}</strong>
                 {p.category && <div style={{ fontSize: 11.5, color: "var(--muted)" }}>{p.category}</div>}
               </div>
-              <div className="product-actions">
-                <button onClick={() => startEdit(p)}>Edit</button>
-                <button className="danger" onClick={() => removeProduct(p.id)}>Remove</button>
-              </div>
+              {!readOnly && (
+                <div className="product-actions">
+                  <button onClick={() => startEdit(p)}>Edit</button>
+                  <button className="danger" onClick={() => removeProduct(p.id)}>Remove</button>
+                </div>
+              )}
             </div>
             <div className="chip-row">
               {p.contains.length === 0 && p.may.length === 0 ? (
@@ -308,7 +223,7 @@ export default function Allergens({ onBack }) {
         />
       )}
 
-      {editingId === null && (
+      {editingId === null && !readOnly && (
         <button className="btn ghost" onClick={startAdd}>+ Add product</button>
       )}
     </div>
