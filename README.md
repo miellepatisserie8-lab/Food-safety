@@ -1,5 +1,9 @@
 # Mielle Kitchen Safety App (v2.1)
 
+> **v3.0** adds the Cake orders module (Shopify web orders via webhook, phone/walk-in
+> orders, kitchen production list, collections banner) and moves the shared allergen
+> product list into the Google Sheet. See `V3-UPGRADE-HANDOFF.md` for rollout steps.
+
 Mobile-first food safety and compliance app for Mielle Patisserie Ltd, Ancoats, Manchester.
 React frontend (Vercel) + Google Apps Script / Google Sheets backend — zero running cost.
 
