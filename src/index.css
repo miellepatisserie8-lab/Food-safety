@@ -534,3 +534,131 @@ label.fl { display: block; font-size: 12.5px; font-weight: 700; color: var(--mut
   gap: 6px;
   font-size: 12.5px;
 }
+
+/* ═══════════════ v3.0 — Cake orders & layout changes ═══════════════ */
+
+/* Header home button (top-left, mirrors the gold staff chip) */
+.home-chip {
+  grid-column: 1; justify-self: start;
+  background: var(--gold); color: #fff; border: none; border-radius: 999px;
+  padding: 8px 12px; font-size: 16px; line-height: 1; cursor: pointer;
+  min-height: 36px; min-width: 42px;
+}
+.home-chip:active { opacity: 0.85; }
+
+/* Icon-only Orders tab: bigger emoji + inbox count badge */
+.bottom-nav button .ni { position: relative; }
+.bottom-nav button .ni.big { font-size: 27px; margin-bottom: 0; padding-top: 3px; }
+.nav-badge {
+  position: absolute; top: -4px; right: -12px;
+  background: var(--fail); color: #fff; border-radius: 999px;
+  min-width: 17px; height: 17px; padding: 0 4px;
+  font-size: 10.5px; font-weight: 800; line-height: 17px;
+}
+
+/* Dashboard collections banner */
+.orders-banner {
+  display: block; width: 100%; text-align: left; cursor: pointer;
+  background: var(--gold-soft); border: 1.5px solid var(--gold);
+  border-radius: var(--radius); padding: 12px 14px; margin-bottom: 4px;
+}
+.orders-banner:active { opacity: 0.9; }
+.ob-line { font-size: 13.5px; font-weight: 700; color: var(--ink); }
+.ob-line + .ob-line { margin-top: 5px; }
+.ob-line.sub { font-weight: 600; font-size: 12.5px; color: var(--muted); }
+.ob-line.overdue { color: var(--fail); }
+
+/* Half-size centred 7-day ribbon at the end of the page content */
+.ribbon-wrap { margin-top: 22px; text-align: center; }
+.ribbon-label {
+  font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--muted); font-weight: 700; margin-bottom: 5px;
+}
+.today-strip.mini { justify-content: center; gap: 5px; overflow-x: visible; }
+.today-strip.mini .day-dot { width: 22px; font-size: 8.5px; }
+.today-strip.mini .day-dot .c {
+  width: 17px; height: 17px; font-size: 8px; border-width: 1.5px; margin-bottom: 2px;
+}
+
+/* Segmented sub-nav (This week / Inbox / Kitchen) */
+.seg-row { display: flex; gap: 8px; margin-bottom: 12px; }
+.seg-row button {
+  flex: 1; border-radius: 999px; border: 1.5px solid var(--line); background: #fff;
+  padding: 9px 6px; font-size: 12.5px; font-weight: 700; cursor: pointer; min-height: 38px;
+  color: var(--ink);
+}
+.seg-row button.sel { background: var(--navy); border-color: var(--navy); color: #fff; }
+
+/* Order cards */
+.order-card {
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 13px 14px; margin-bottom: 8px; cursor: pointer; min-height: 64px;
+}
+.order-card:active { background: var(--gold-soft); }
+.order-card.overdue { border-color: var(--fail); background: var(--fail-bg); }
+.order-card.cancelled { opacity: 0.6; }
+.order-card.inboxed { border-style: dashed; border-color: var(--gold); }
+.oc-time {
+  flex: 0 0 52px; font-size: 14px; font-weight: 800; text-align: center; color: var(--navy);
+}
+.oc-date { display: block; font-size: 10px; color: var(--muted); font-weight: 700; }
+.oc-main { flex: 1; min-width: 0; }
+.oc-name { font-size: 14.5px; font-weight: 700; }
+.oc-no { font-size: 12px; color: var(--muted); font-weight: 600; }
+.oc-items {
+  font-size: 12.5px; color: var(--muted); margin-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.oc-note { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.closed-tag { font-size: 11px; color: var(--due); font-weight: 700; text-transform: none; letter-spacing: 0; }
+.empty.small { padding: 8px 10px; font-size: 12.5px; text-align: left; }
+
+/* Kitchen production cards */
+.kitchen-card { display: block; width: 100%; text-align: left; cursor: pointer; }
+.kitchen-card:active { background: var(--gold-soft); }
+.kc-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.kc-head strong { font-size: 14px; }
+.kc-items { margin: 8px 0 0; padding-left: 20px; }
+.kc-items li { font-size: 13.5px; margin-bottom: 3px; }
+.kc-msg {
+  margin-top: 8px; font-size: 13px; font-weight: 650;
+  background: var(--gold-soft); border-radius: 8px; padding: 7px 10px;
+}
+
+/* Order detail */
+.pay-row {
+  display: flex; justify-content: space-between; font-size: 14px; padding: 6px 0;
+}
+.pay-row.total { font-weight: 800; border-top: 1px solid var(--line); margin-top: 4px; padding-top: 9px; }
+.contact-row { display: flex; gap: 10px; }
+.btn.half { flex: 1; margin-top: 12px; text-align: center; text-decoration: none; line-height: 20px; }
+.status-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.status-dot {
+  border-radius: 999px; border: 1.5px solid var(--line); background: #fff;
+  padding: 7px 11px; font-size: 12px; font-weight: 700; cursor: pointer; min-height: 34px;
+}
+.status-dot.sel { background: var(--navy); border-color: var(--navy); color: #fff; }
+.status-dot:disabled { opacity: 0.5; }
+.btn.danger-line { border-color: var(--fail); color: var(--fail); }
+
+/* New order form — items */
+.item-row {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+  padding: 8px 10px; margin-bottom: 8px;
+}
+.ir-qty { display: flex; align-items: center; gap: 6px; }
+.ir-qty button {
+  width: 30px; height: 30px; border-radius: 8px; border: 1.5px solid var(--line);
+  background: #fff; font-size: 16px; font-weight: 800; cursor: pointer;
+}
+.ir-qty span { min-width: 18px; text-align: center; font-weight: 800; }
+.ir-name { flex: 1; font-size: 13.5px; font-weight: 650; min-width: 0; }
+.ir-x { background: none; border: none; color: var(--fail); font-size: 15px; cursor: pointer; padding: 4px; }
+.allergy-toggle { margin-top: 14px; }
+.allergy-toggle label {
+  display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700;
+  background: var(--fail-bg); border-radius: 10px; padding: 12px;
+}
+.allergy-toggle input { width: 20px; height: 20px; }

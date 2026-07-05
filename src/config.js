@@ -101,3 +101,26 @@ export const INCIDENT_TYPES = [
 ];
 
 export const SHEET_URL = process.env.REACT_APP_GOOGLE_SHEET_URL || "";
+
+/* ─────────────── v3.0 — Cake orders ─────────────── */
+
+// Days the shop is normally closed. Picking a collection date on one of
+// these days shows a warning (override allowed — e.g. bank holiday Mondays).
+// Change anytime in Vercel without touching code:
+// REACT_APP_CLOSED_DAYS = "Monday,Tuesday"
+export const CLOSED_DAYS = (process.env.REACT_APP_CLOSED_DAYS || "Monday,Tuesday")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+
+// Lead-time guard: warn (never block) when a collection date is closer
+// than this many days away. REACT_APP_ORDER_LEAD_DAYS = "3"
+export const ORDER_LEAD_DAYS = Number(process.env.REACT_APP_ORDER_LEAD_DAYS || 3);
+
+export const ORDER_STATUSES = ["New", "Confirmed", "In production", "Ready", "Collected"];
+
+export const ORDER_SOURCES = [
+  { id: "web", label: "Web", icon: "🌐" },
+  { id: "phone", label: "Phone", icon: "📞" },
+  { id: "walkin", label: "Walk-in", icon: "🏪" },
+];

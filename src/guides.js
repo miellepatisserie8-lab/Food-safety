@@ -2,6 +2,16 @@
 // Each entry: legal/why, how often, and what to do — kept short enough to read in the kitchen.
 
 export const GUIDES = {
+  orders: {
+    title: "How cake orders work",
+    points: [
+      "Web orders from the Shopify site arrive in the 🌐 Inbox by themselves — tap one, set the collection date and time, and confirm.",
+      "Phone and walk-in orders: use + New order. Always record the exact message for the cake and any declared allergy.",
+      "Statuses: New → Confirmed → In production → Ready → Collected. The Kitchen view shows what to make today and tomorrow.",
+      "Take the remaining balance before handing over — the app warns you if a balance is still due at collection.",
+      "Closed days (normally Mon & Tue) show a warning when picking a date — you can override for a special opening.",
+    ],
+  },
   dashboard: {
     title: "How to use this app day to day",
     points: [
