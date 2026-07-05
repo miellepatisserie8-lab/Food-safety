@@ -3,15 +3,17 @@ import Dashboard from "./screens/Dashboard";
 import DailyChecks from "./screens/DailyChecks";
 import TempLogs from "./screens/TempLogs";
 import Cleaning from "./screens/Cleaning";
+import Orders, { inboxOrders } from "./screens/Orders";
 import More from "./screens/More";
 import StaffPicker from "./components/StaffPicker";
 import { api } from "./api";
 
+// v3.0 — Home moved to a header button; Orders (🎂, icon only) joins the bar.
 const NAV = [
-  { id: "home", label: "Home", icon: "🏠" },
   { id: "checks", label: "Checks", icon: "✅" },
   { id: "temps", label: "Temps", icon: "🌡️" },
   { id: "cleaning", label: "Cleaning", icon: "🧽" },
+  { id: "orders", label: "", aria: "Cake orders", icon: "🎂", big: true },
   { id: "more", label: "More", icon: "☰" },
 ];
 
@@ -21,6 +23,8 @@ export default function App() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [toast, setToast] = useState("");
   const [history, setHistory] = useState(null);
+  const [orders, setOrders] = useState([]);
+  const [ordersError, setOrdersError] = useState("");
 
   const showToast = useCallback((msg) => {
     setToast(msg);
@@ -36,10 +40,27 @@ export default function App() {
     }
   }, []);
 
+  const refreshOrders = useCallback(async () => {
+    try {
+      const data = await api.getOrders();
+      setOrders(Array.isArray(data.orders) ? data.orders : []);
+      setOrdersError("");
+    } catch (e) {
+      setOrdersError(e.message);
+    }
+  }, []);
+
   useEffect(() => {
     if (!staff) setPickerOpen(true);
     refreshHistory();
   }, [staff, refreshHistory]);
+
+  // Orders refresh on load and every 60s so the inbox badge stays current.
+  useEffect(() => {
+    refreshOrders();
+    const t = setInterval(refreshOrders, 60000);
+    return () => clearInterval(t);
+  }, [refreshOrders]);
 
   const chooseStaff = (name) => {
     setStaff(name);
@@ -47,13 +68,14 @@ export default function App() {
     setPickerOpen(false);
   };
 
-  const common = { staff, showToast, refreshHistory, history, goto: setTab };
+  const inboxCount = inboxOrders(orders).length;
+  const common = { staff, showToast, refreshHistory, history, goto: setTab, orders, refreshOrders, ordersError };
 
   return (
     <div className="app">
       <header className="header">
         <div className="brandline">
-          <div className="spacer" aria-hidden="true"></div>
+          <button className="home-chip" onClick={() => setTab("home")} aria-label="Home">🏠</button>
           <div className="brand-center">
             <h1>Mielle <span>Kitchen Safety</span></h1>
             <div className="sub">Ancoats</div>
@@ -68,12 +90,21 @@ export default function App() {
       {tab === "checks" && <DailyChecks {...common} />}
       {tab === "temps" && <TempLogs {...common} />}
       {tab === "cleaning" && <Cleaning {...common} />}
+      {tab === "orders" && <Orders {...common} />}
       {tab === "more" && <More {...common} />}
 
       <nav className="bottom-nav">
         {NAV.map((n) => (
-          <button key={n.id} className={tab === n.id ? "active" : ""} onClick={() => setTab(n.id)}>
-            <span className="ni">{n.icon}</span>
+          <button
+            key={n.id}
+            className={tab === n.id ? "active" : ""}
+            onClick={() => setTab(n.id)}
+            aria-label={n.aria || n.label}
+          >
+            <span className={`ni ${n.big ? "big" : ""}`}>
+              {n.icon}
+              {n.id === "orders" && inboxCount > 0 && <span className="nav-badge">{inboxCount}</span>}
+            </span>
             {n.label}
           </button>
         ))}

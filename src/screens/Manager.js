@@ -1,7 +1,14 @@
 import React, { useState } from "react";
 import { MANAGER_PASSCODE, FIRE_MARSHAL_CONTACT, MANAGER_PHONE } from "../config";
 
-export default function Manager({ onBack }) {
+export default function Manager({ onBack, orders = [] }) {
+  // v3.0 — weekly cake order money summary
+  const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
+  const active = orders.filter((o) => o.status !== "Collected" && o.status !== "Cancelled");
+  const takenThisWeek = orders.filter((o) => new Date(o.createdAt) >= weekAgo && o.status !== "Cancelled").length;
+  const cancelledThisWeek = orders.filter((o) => o.status === "Cancelled" && new Date(o.updatedAt || o.createdAt) >= weekAgo).length;
+  const depositsHeld = active.reduce((s, o) => s + Number(o.deposit || 0), 0);
+  const balanceOutstanding = active.reduce((s, o) => s + Math.max(0, Number(o.price || 0) - Number(o.deposit || 0)), 0);
   const [code, setCode] = useState("");
   const [unlocked, setUnlocked] = useState(false);
   const [err, setErr] = useState("");
@@ -53,6 +60,14 @@ export default function Manager({ onBack }) {
           Evacuation drill: last Wednesday of each month.<br />
           Electric cooking only — <strong>no gas on the premises</strong>.
         </p>
+      </div>
+
+      <div className="card">
+        <strong>Cake orders — money at a glance</strong>
+        <div className="pay-row"><span>New orders (last 7 days)</span><span>{takenThisWeek}</span></div>
+        <div className="pay-row"><span>Cancellations (last 7 days)</span><span>{cancelledThisWeek}</span></div>
+        <div className="pay-row"><span>Deposits held (open orders)</span><span>£{depositsHeld.toFixed(2)}</span></div>
+        <div className="pay-row total"><span>Balance still to take</span><span>£{balanceOutstanding.toFixed(2)}</span></div>
       </div>
 
       <div className="card">

@@ -24,10 +24,10 @@ export default function More(props) {
   if (view === "documents") return <Documents onBack={back} />;
   if (view === "hygiene") return <Hygiene {...props} onBack={back} />;
   if (view === "training") return <Training {...props} onBack={back} />;
-  if (view === "allergens") return <Allergens onBack={back} />;
+  if (view === "allergens") return <Allergens {...props} onBack={back} />;
   if (view === "incidents") return <Incidents {...props} onBack={back} />;
   if (view === "history") return <History {...props} onBack={back} />;
-  if (view === "manager") return <Manager onBack={back} />;
+  if (view === "manager") return <Manager {...props} onBack={back} />;
 
   return (
     <div className="screen">
