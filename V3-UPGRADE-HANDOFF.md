@@ -29,9 +29,15 @@ product seed/save/delete, v2 actions untouched).
 - Bottom tabs: **Checks · Temps · Cleaning · 🎂 · More** (Orders is icon-only, enlarged, with badge; `aria-label="Cake orders"` kept for screen readers).
 - Last-7-days strip: centred, **half size**, sits as the **last item of the page content** (not pinned).
 
+**SumUp payment links (remote card / Apple Pay / Google Pay)**
+- On any open order, staff tap **💳 Request payment by link** → enter the amount (defaults to the balance) → the backend creates a SumUp **Hosted Checkout** and stores the link on the order.
+- One-tap **💬 Send link** (pre-filled WhatsApp message) or **📋 Copy link**; **🔄 Check payment** asks SumUp and, on PAID, credits the amount to the order's deposit **exactly once** (double-crediting is impossible — status is latched).
+- Links expire after ~30 minutes unpaid (SumUp platform behaviour); the app detects this and offers a fresh link. Failed payments likewise.
+- The API key never leaves the backend; the app only ever sees the payment URL.
+
 **Backend (`apps-script/Code.gs`, now v3)**
 - New tabs auto-created: `Cake_Orders`, `Allergen_Products`.
-- New actions: `addOrder`, `updateOrder`, `getOrders`, `seedProducts`, `saveProduct`, `deleteProduct`.
+- New actions: `addOrder`, `updateOrder`, `getOrders`, `seedProducts`, `saveProduct`, `deleteProduct`, `createPaymentLink`, `checkPayment` (SumUp Hosted Checkout: `POST/GET api.sumup.com/v0.1/checkouts`, verified against SumUp's July 2026 docs).
 - Shopify webhooks (order creation + cancellation) with URL-token guard; duplicate deliveries deduped by Shopify order ID; cancellations flag the existing row ⛔.
 - All v2 actions unchanged.
 
@@ -42,6 +48,8 @@ product seed/save/delete, v2 actions untouched).
 | `REACT_APP_CLOSED_DAYS` | Vercel | Optional | `Monday,Tuesday` |
 | `REACT_APP_ORDER_LEAD_DAYS` | Vercel | Optional | `3` |
 | `WEBHOOK_TOKEN` | **Apps Script Script Properties** (NOT Vercel, NOT the repo) | **Required for Shopify import** | none |
+| `SUMUP_API_KEY` | Apps Script Script Properties | Required for payment links | none |
+| `SUMUP_MERCHANT_CODE` | Apps Script Script Properties | Required for payment links | none |
 
 The six existing v2.2 secrets are untouched. `WEBHOOK_TOKEN` deliberately lives in
 Apps Script (Project Settings → Script Properties) because the repo is public.
@@ -60,6 +68,13 @@ top of v2.2 as four commits. Push `main` to `miellepatisserie8-lab/Food-safety`
 4. **Deploy → Manage deployments → ✏️ Edit → Version: “New version” → Deploy.**
    ⚠️ This keeps the same `/exec` URL (so `REACT_APP_GOOGLE_SCRIPT_URL` in Vercel is
    unchanged). Do NOT create a brand-new deployment or the URL changes.
+
+**Step 2b — SumUp setup** (skip to test everything else first; payment-link buttons just report "not configured" until done):
+1. SumUp Dashboard (me.sumup.com) → **Developer settings → API keys** → create a secret key.
+   Use `sk_test_…` + a **sandbox merchant account** (created in the same Developer settings) to trial without real money, then swap to `sk_live_…` for go-live.
+2. Note the **merchant code** (looks like `MCXXXXXX`) from the SumUp Dashboard profile — use the sandbox merchant's code with a test key, the real one with the live key.
+3. Apps Script → Project Settings → Script Properties → add `SUMUP_API_KEY` and `SUMUP_MERCHANT_CODE`.
+4. Pre-flight checks with Mielle's SumUp account: **online payments enabled** on the account, and confirm the **card-not-present fee rate** (typically higher than the in-person reader rate). Branding on the payment page is set at me.sumup.com/settings/branding.
 
 **Step 3 — Add the Shopify webhooks** (Shopify admin → Settings → Notifications → Webhooks → Create webhook):
 | Event | Format | URL |
@@ -80,6 +95,8 @@ never writes back to Shopify: no fulfilment, stock or refund changes).
 - [ ] Shopify admin → your webhook → "Send test notification" → order appears in 🌐 Inbox with badge on the 🎂 tab; confirm it with a date.
 - [ ] Set deposit < price, mark Collected → balance-due guard fires.
 - [ ] Kitchen view lists the order with message/allergy note; Ready removes it.
+- [ ] SumUp (with test key + sandbox merchant): create a link on an order with a balance → link opens a SumUp payment page → pay with SumUp's test card → 🔄 Check payment credits the deposit; press Check again → "Already paid", amount NOT credited twice.
+- [ ] Leave a link 30+ min unpaid → app shows "Link expired — send a fresh one".
 - [ ] v2 features still work: log a temp, a cleaning task, an opening check.
 - [ ] Manager area: money card shows the test order's numbers.
 
@@ -95,6 +112,8 @@ webhooks at the production `/exec` URL then (delete or keep the DEV ones as Miel
 - Apps Script can't read HTTP headers, so Shopify's HMAC can't be verified; the long URL token is the guard. Wrong/missing token → nothing is written.
 - Allergen chips match by exact product name (case-insensitive); unmatched Shopify titles simply show no chips until added to the shared list.
 - Customer names/phones/emails land in the Google Sheet — check the Sheet's sharing is restricted to who needs it.
+- SumUp links are one-shot, ~30-minute sessions — fine for "pay while we're on the phone / on WhatsApp"; for a customer paying hours later, staff send a fresh link at that point. Payment confirmation is pull-based (the 🔄 Check button), not automatic.
+- SumUp refunds are done in the SumUp app/dashboard as normal — the app records money in, not refunds.
 
 ## 5. Rollback
 
