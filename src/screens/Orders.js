@@ -65,6 +65,10 @@ function waHref(phone, msg) {
   return "https://wa.me/" + p.replace("+", "") + "?text=" + encodeURIComponent(msg);
 }
 const SOURCE_ICON = { web: "🌐", phone: "📞", walkin: "🏪" };
+function linkExpired(o) {
+  if (!o.sumupCreatedAt) return false;
+  return Date.now() - new Date(o.sumupCreatedAt).getTime() > 30 * 60 * 1000; // SumUp links live ~30 min
+}
 
 /* ══════════════════ main screen ══════════════════ */
 export default function Orders({ staff, showToast, orders, refreshOrders, ordersError }) {
@@ -305,6 +309,7 @@ function KitchenCard({ o, onOpen, showDate }) {
 /* ══════════════════ Order detail ══════════════════ */
 function OrderDetail({ order: o, staff, showToast, refreshOrders, onBack, onEdit }) {
   const [busy, setBusy] = useState(false);
+  const [checking, setChecking] = useState(false);
   const products = productsFromCache();
   const balance = Math.max(0, Number(o.price || 0) - Number(o.deposit || 0));
 
@@ -336,6 +341,56 @@ function OrderDetail({ order: o, staff, showToast, refreshOrders, onBack, onEdit
   const takeBalance = () => {
     if (!window.confirm(`Take the remaining balance of ${money(balance)} now?`)) return;
     patch({ deposit: Number(o.price || 0) }, "Balance taken — paid in full ✅");
+  };
+
+  // ── SumUp payment link (remote card / Apple Pay / Google Pay) ──
+  const requestLink = async () => {
+    const suggested = balance > 0 ? balance : Number(o.price || 0);
+    const raw = window.prompt("Amount to request by payment link (£):", suggested.toFixed(2));
+    if (raw === null) return;
+    const amount = Number(raw);
+    if (!(amount > 0)) { showToast("Enter an amount above £0"); return; }
+    setBusy(true);
+    try {
+      const res = await api.createPaymentLink(o.id, amount, balance > 0 && Number(o.deposit || 0) > 0 ? "balance" : "deposit");
+      if (res.ok) {
+        showToast("Payment link created ✅ — send it to the customer");
+        refreshOrders && refreshOrders();
+      } else {
+        showToast(res.error || "SumUp link failed");
+      }
+    } catch (e) {
+      showToast("Not created — " + e.message);
+    }
+    setBusy(false);
+  };
+
+  const checkPaid = async () => {
+    setChecking(true);
+    try {
+      const res = await api.checkPayment(o.id);
+      if (res.ok && res.status === "PAID") {
+        showToast(res.alreadyCredited ? "Already paid ✅" : `Paid ✅ — £${Number(res.credited || 0).toFixed(2)} added`);
+        refreshOrders && refreshOrders();
+      } else if (res.ok) {
+        showToast(res.status === "FAILED" ? "Payment failed — send a fresh link" : "Not paid yet — ask the customer to check the link");
+        refreshOrders && refreshOrders();
+      } else {
+        showToast(res.error || "Could not check");
+      }
+    } catch (e) {
+      showToast("Could not check — " + e.message);
+    }
+    setChecking(false);
+  };
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(o.sumupUrl);
+      showToast("Link copied 📋");
+    } catch {
+      window.prompt("Copy the payment link:", o.sumupUrl);
+    }
   };
 
   const cancelOrder = () => {
@@ -397,7 +452,42 @@ function OrderDetail({ order: o, staff, showToast, refreshOrders, onBack, onEdit
         <div className="pay-row"><span>Paid so far</span><span>{money(o.deposit)}</span></div>
         <div className="pay-row total"><span>Balance due</span><span>{balance > 0 ? money(balance) : "Paid in full ✅"}</span></div>
         {balance > 0 && o.status !== "Cancelled" && (
-          <button className="btn gold" disabled={busy} onClick={takeBalance}>Take balance {money(balance)}</button>
+          <button className="btn gold" disabled={busy} onClick={takeBalance}>Take balance {money(balance)} (in person)</button>
+        )}
+
+        {o.status !== "Cancelled" && (
+          <div className="sumup-box">
+            {o.sumupUrl && o.sumupStatus === "PAID" ? (
+              <div className="sumup-status paid">💳 SumUp: {money(o.sumupAmount)} paid online ✅</div>
+            ) : o.sumupUrl && o.sumupStatus === "PENDING" && !linkExpired(o) ? (
+              <>
+                <div className="sumup-status">💳 SumUp link for {money(o.sumupAmount)} — awaiting payment (valid ~30 min)</div>
+                <div className="contact-row">
+                  {o.phone && (
+                    <a
+                      className="btn ghost half"
+                      href={waHref(o.phone, `Hi ${(o.customer || "").split(" ")[0]}, here's the secure payment link for your Mielle Patisserie order (${money(o.sumupAmount)}): ${o.sumupUrl} — it's valid for 30 minutes 🎂 Thank you!`)}
+                      target="_blank" rel="noreferrer"
+                    >💬 Send link</a>
+                  )}
+                  <button className="btn ghost half" onClick={copyLink}>📋 Copy link</button>
+                </div>
+                <button className="btn half" style={{ width: "100%" }} disabled={checking} onClick={checkPaid}>
+                  {checking ? "Checking…" : "🔄 Check payment"}
+                </button>
+              </>
+            ) : o.sumupUrl && (o.sumupStatus === "FAILED" || linkExpired(o)) ? (
+              <>
+                <div className="sumup-status expired">
+                  💳 {o.sumupStatus === "FAILED" ? "Payment failed" : "Link expired (30 min)"} — send a fresh one
+                </div>
+                <button className="btn ghost" disabled={busy} onClick={requestLink}>💳 New SumUp payment link…</button>
+                <button className="btn ghost" style={{ marginTop: 8 }} disabled={checking} onClick={checkPaid}>🔄 Check anyway</button>
+              </>
+            ) : balance > 0 ? (
+              <button className="btn ghost" disabled={busy} onClick={requestLink}>💳 Request payment by link (SumUp)…</button>
+            ) : null}
+          </div>
         )}
       </div>
 

@@ -35,6 +35,8 @@ export const api = {
   getOrders: () => get("getOrders"),
   addOrder: (order) => post("addOrder", order),
   updateOrder: (patch) => post("updateOrder", patch), // patch must include { id }
+  createPaymentLink: (id, amount, purpose) => post("createPaymentLink", { id, amount, purpose }),
+  checkPayment: (id) => post("checkPayment", { id }),
 
   // Shared allergen products (v3 — moved from on-device to the Sheet)
   getProducts: () => get("getProducts"),

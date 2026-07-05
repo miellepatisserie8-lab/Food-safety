@@ -662,3 +662,9 @@ label.fl { display: block; font-size: 12.5px; font-weight: 700; color: var(--mut
   background: var(--fail-bg); border-radius: 10px; padding: 12px;
 }
 .allergy-toggle input { width: 20px; height: 20px; }
+
+/* SumUp payment links */
+.sumup-box { margin-top: 12px; border-top: 1px dashed var(--line); padding-top: 10px; }
+.sumup-status { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.sumup-status.paid { color: var(--ok); }
+.sumup-status.expired { color: var(--due); }

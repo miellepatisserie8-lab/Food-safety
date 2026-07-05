@@ -31,7 +31,8 @@ var SHEETS = {
   Staff_Training: ["Timestamp", "RecordedBy", "Trainee", "Course", "Provider", "Expiry"],
   Cake_Orders: ["OrderID", "CreatedAt", "UpdatedAt", "Source", "ShopifyOrderNo", "ShopifyOrderId",
     "Customer", "Phone", "Email", "Items", "CakeMessage", "AllergyFlag", "AllergyNote", "CustomerNote",
-    "CollectionDate", "CollectionTime", "PriceGBP", "DepositGBP", "Status", "Staff", "CancelReason"],
+    "CollectionDate", "CollectionTime", "PriceGBP", "DepositGBP", "Status", "Staff", "CancelReason",
+    "SumUpCheckoutId", "SumUpLinkURL", "SumUpAmountGBP", "SumUpStatus", "SumUpCreatedAt"],
   Allergen_Products: ["ProductID", "Name", "Category", "Contains", "MayContain", "UpdatedAt", "UpdatedBy"],
   Settings: ["Key", "Value"]
 };
@@ -108,6 +109,12 @@ function doPost(e) {
       saveProduct_(p, now);
     } else if (action === "deleteProduct") {
       deleteProductRow_(p.id);
+
+    /* ── v3: SumUp payment links ── */
+    } else if (action === "createPaymentLink") {
+      return json_(createPaymentLink_(p, now));
+    } else if (action === "checkPayment") {
+      return json_(checkPayment_(p, now));
     } else {
       return json_({ ok: false, error: "Unknown action" });
     }
@@ -238,7 +245,8 @@ function orderRowFromApp_(p, now) {
     p.items || "", p.cakeMessage || "", p.allergyFlag ? "true" : "false", p.allergyNote || "",
     p.customerNote || "", p.collectionDate || "", p.collectionTime || "",
     Number(p.price || 0), Number(p.deposit || 0),
-    p.status || "Confirmed", p.staff || "", ""
+    p.status || "Confirmed", p.staff || "", "",
+    "", "", "", "", ""
   ];
 }
 
@@ -313,7 +321,11 @@ function readOrders_() {
       deposit: Number(r[colIx_("DepositGBP")] || 0),
       status: status || "New",
       staff: String(r[colIx_("Staff")] || ""),
-      cancelReason: String(r[colIx_("CancelReason")] || "")
+      cancelReason: String(r[colIx_("CancelReason")] || ""),
+      sumupUrl: String(r[colIx_("SumUpLinkURL")] || ""),
+      sumupAmount: Number(r[colIx_("SumUpAmountGBP")] || 0),
+      sumupStatus: String(r[colIx_("SumUpStatus")] || ""),
+      sumupCreatedAt: fmtDate_(r[colIx_("SumUpCreatedAt")], "yyyy-MM-dd'T'HH:mm:ss")
     });
   });
   return out;
@@ -380,7 +392,8 @@ function handleShopifyWebhook_(e) {
     String(order.order_number || order.name || "").replace("#", ""), shopifyId,
     name, phone, order.email || order.contact_email || "",
     items, "", "false", "", order.note || "",
-    "", "", price, paid, "New", "Shopify", ""
+    "", "", price, paid, "New", "Shopify", "",
+    "", "", "", "", ""
   ]);
   return json_({ ok: true });
 }
@@ -439,4 +452,123 @@ function deleteProductRow_(id) {
       return;
     }
   }
+}
+
+
+/* ═══════════════ v3 — SumUp payment links (Hosted Checkout) ═══════════════
+ * Setup (Script Properties, Project Settings → ⚙️):
+ *   SUMUP_API_KEY       — secret key from SumUp Dashboard → Developer settings
+ *                         (sk_live_… for real money, sk_test_… + sandbox merchant to test)
+ *   SUMUP_MERCHANT_CODE — your merchant code (looks like MCXXXXXX), SumUp Dashboard profile
+ * The key stays server-side only; the app never sees it.
+ * Links are SumUp-hosted pages (card / Apple Pay / Google Pay) and expire
+ * after ~30 minutes unpaid — the app offers a fresh link when that happens.
+ */
+
+function sumupProps_() {
+  var props = PropertiesService.getScriptProperties();
+  return {
+    key: props.getProperty("SUMUP_API_KEY"),
+    merchant: props.getProperty("SUMUP_MERCHANT_CODE")
+  };
+}
+
+function findOrderRow_(sh, orderId) {
+  if (sh.getLastRow() < 2) return 0;
+  var ids = sh.getRange(2, 1, sh.getLastRow() - 1, 1).getValues();
+  for (var i = 0; i < ids.length; i++) {
+    if (String(ids[i][0]) === String(orderId)) return i + 2;
+  }
+  return 0;
+}
+
+// Create a hosted checkout for an order and store the link on the row.
+function createPaymentLink_(p, now) {
+  var cfg = sumupProps_();
+  if (!cfg.key || !cfg.merchant) {
+    return { ok: false, error: "SumUp is not configured — add SUMUP_API_KEY and SUMUP_MERCHANT_CODE in Apps Script Script Properties." };
+  }
+  var amount = Math.round(Number(p.amount || 0) * 100) / 100;
+  if (!(amount > 0)) return { ok: false, error: "Amount must be more than £0." };
+
+  var sh = getSheet_("Cake_Orders");
+  var rowN = findOrderRow_(sh, p.id);
+  if (!rowN) return { ok: false, error: "Order not found: " + p.id };
+  var row = sh.getRange(rowN, 1, 1, ORDER_COLS.length).getValues()[0];
+
+  var body = {
+    amount: amount,
+    currency: "GBP",
+    checkout_reference: String(p.id) + "-" + Date.now(), // must be unique per attempt
+    description: "Mielle Patisserie — cake order" +
+      (row[colIx_("ShopifyOrderNo")] ? " #" + row[colIx_("ShopifyOrderNo")] : "") +
+      " for " + (row[colIx_("Customer")] || "customer") +
+      (p.purpose ? " (" + p.purpose + ")" : ""),
+    merchant_code: cfg.merchant,
+    hosted_checkout: { enabled: true }
+  };
+  var res = UrlFetchApp.fetch("https://api.sumup.com/v0.1/checkouts", {
+    method: "post",
+    contentType: "application/json",
+    headers: { Authorization: "Bearer " + cfg.key },
+    payload: JSON.stringify(body),
+    muteHttpExceptions: true
+  });
+  var code = res.getResponseCode();
+  var data = {};
+  try { data = JSON.parse(res.getContentText()); } catch (e) {}
+  if (code < 200 || code >= 300 || !data.hosted_checkout_url) {
+    return { ok: false, error: "SumUp rejected the request (" + code + "): " + (data.message || data.error_message || res.getContentText()).slice(0, 180) };
+  }
+
+  row[colIx_("SumUpCheckoutId")] = data.id;
+  row[colIx_("SumUpLinkURL")] = data.hosted_checkout_url;
+  row[colIx_("SumUpAmountGBP")] = amount;
+  row[colIx_("SumUpStatus")] = "PENDING";
+  row[colIx_("SumUpCreatedAt")] = now;
+  row[colIx_("UpdatedAt")] = now;
+  sh.getRange(rowN, 1, 1, ORDER_COLS.length).setValues([row]);
+
+  return { ok: true, url: data.hosted_checkout_url, amount: amount, checkoutId: data.id };
+}
+
+// Ask SumUp whether the order's link has been paid. On first sight of
+// PAID, credit the amount to the order's deposit (never twice).
+function checkPayment_(p, now) {
+  var cfg = sumupProps_();
+  if (!cfg.key) return { ok: false, error: "SumUp is not configured." };
+
+  var sh = getSheet_("Cake_Orders");
+  var rowN = findOrderRow_(sh, p.id);
+  if (!rowN) return { ok: false, error: "Order not found: " + p.id };
+  var row = sh.getRange(rowN, 1, 1, ORDER_COLS.length).getValues()[0];
+  var checkoutId = String(row[colIx_("SumUpCheckoutId")] || "");
+  if (!checkoutId) return { ok: false, error: "No payment link exists for this order yet." };
+  if (String(row[colIx_("SumUpStatus")]) === "PAID") {
+    return { ok: true, status: "PAID", alreadyCredited: true };
+  }
+
+  var res = UrlFetchApp.fetch("https://api.sumup.com/v0.1/checkouts/" + encodeURIComponent(checkoutId), {
+    headers: { Authorization: "Bearer " + cfg.key },
+    muteHttpExceptions: true
+  });
+  var data = {};
+  try { data = JSON.parse(res.getContentText()); } catch (e) {}
+  var status = String(data.status || "UNKNOWN"); // PENDING | PAID | FAILED
+
+  if (status === "PAID") {
+    var credit = Number(row[colIx_("SumUpAmountGBP")] || 0);
+    row[colIx_("DepositGBP")] = Number(row[colIx_("DepositGBP")] || 0) + credit;
+    row[colIx_("SumUpStatus")] = "PAID";
+    row[colIx_("UpdatedAt")] = now;
+    sh.getRange(rowN, 1, 1, ORDER_COLS.length).setValues([row]);
+    return { ok: true, status: "PAID", credited: credit };
+  }
+
+  if (status !== String(row[colIx_("SumUpStatus")])) {
+    row[colIx_("SumUpStatus")] = status;
+    row[colIx_("UpdatedAt")] = now;
+    sh.getRange(rowN, 1, 1, ORDER_COLS.length).setValues([row]);
+  }
+  return { ok: true, status: status };
 }
