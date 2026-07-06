@@ -58,6 +58,11 @@ function CheckList({ mode, items, staff, showToast, refreshHistory, onBack }) {
   const set = (i, v) => setAnswers((a) => ({ ...a, [i]: a[i] === v ? undefined : v }));
   const allAnswered = items.every((_, i) => answers[i]);
   const anyNo = items.some((_, i) => answers[i] === "no");
+  const tickAllYes = () => {
+    const allYes = {};
+    items.forEach((_, i) => { allYes[i] = "yes"; });
+    setAnswers(allYes);
+  };
 
   const save = async () => {
     setSaving(true);
@@ -101,9 +106,14 @@ function CheckList({ mode, items, staff, showToast, refreshHistory, onBack }) {
         </>
       )}
 
-      <button className="btn" disabled={!allAnswered || (anyNo && !note.trim()) || saving} onClick={save}>
-        {saving ? "Saving…" : "Save checks"}
-      </button>
+      <div className="contact-row">
+        <button className="btn ghost half" onClick={tickAllYes} disabled={saving}>
+          Tick all Yes
+        </button>
+        <button className="btn half" disabled={!allAnswered || (anyNo && !note.trim()) || saving} onClick={save}>
+          {saving ? "Saving…" : "Save checks"}
+        </button>
+      </div>
     </div>
   );
 }
