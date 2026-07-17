@@ -63,6 +63,7 @@ export const CLOSING_CHECKS = [
   "Fridge and freezer doors closed properly",
   "Dishwasher / glasswasher emptied and left open",
   "Electric equipment off (no gas on premises)",
+  "Toilets checked, clean and stocked (soap, paper, tissue)",
 ];
 
 export const CLEANING_TASKS = [
