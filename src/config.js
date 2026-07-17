@@ -52,6 +52,7 @@ export const OPENING_CHECKS = [
   "No evidence of pests (droppings, damage, insects)",
   "Staff fit for work, clean uniform, no uncovered cuts",
   "All food in date and stored covered / off the floor",
+  "Ready for a target EHO inspection today",
 ];
 
 export const CLOSING_CHECKS = [
