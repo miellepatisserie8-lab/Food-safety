@@ -38,9 +38,14 @@ export const APPLIANCES = [
   { id: "barfridge5", name: "Bar Fridge 5", type: "fridge", min: 0, max: 8 },
   { id: "barfridge6", name: "Bar Fridge 6", type: "fridge", min: 0, max: 8 },
   { id: "fridge1", name: "Fridge 1 (Kitchen)", type: "fridge", min: 0, max: 8 },
-  { id: "fridge2", name: "Fridge 2 (Cake Display)", type: "fridge", min: 0, max: 8 },
-  { id: "freezer1", name: "Freezer 1", type: "freezer", min: -25, max: -18 },
-  { id: "freezer2", name: "Freezer 2", type: "freezer", min: -25, max: -18 },
+  { id: "freezer1", name: "Kitchen Freezer 1", type: "freezer", min: -25, max: -18 },
+  { id: "freezer2", name: "Kitchen Freezer 2", type: "freezer", min: -25, max: -18 },
+  { id: "smallfreezer1", name: "Small Freezer 1", type: "freezer", min: -25, max: -18 },
+  { id: "tallfreezer2", name: "Tall Freezer 2", type: "freezer", min: -25, max: -18 },
+  { id: "americanfridge", name: "American Top Fridge", type: "fridge", min: 0, max: 8 },
+  { id: "americanfreezer", name: "American Freezer", type: "freezer", min: -25, max: -18 },
+  { id: "fridge2", name: "Fridge 1 (Cake Display)", type: "fridge", min: 0, max: 8 },
+  { id: "matchafridge", name: "Fridge 2 (Matcha Display)", type: "fridge", min: 0, max: 8 },
   { id: "cellar", name: "Cellar Cooler", type: "cellar", min: 11, max: 13 },
 ];
 
