@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Hygiene from "./Hygiene";
 import Training from "./Training";
-import Allergens from "./Allergens";
 import Incidents from "./Incidents";
 import History from "./History";
 import Manager from "./Manager";
@@ -13,7 +12,7 @@ const ITEMS = [
   { id: "incidents", icon: "⚠️", title: "Incidents", desc: "Food incidents and accidents" },
   { id: "history", icon: "📅", title: "Records & history", desc: "Diary view — show this to an inspector" },
   { id: "training", icon: "🎓", title: "Staff training", desc: "Training log and certificates" },
-  { id: "allergens", icon: "🥜", title: "Allergens", desc: "Bilingual allergen sheets (Natasha's Law)" },
+  { id: "allergens", icon: "🥜", title: "Allergens", desc: "Mielle Allergy Information – opens the full allergen app", href: "https://allergy-information.vercel.app/#/edit" },
   { id: "manager", icon: "🔐", title: "Manager area", desc: "Certificates, settings and exports" },
 ];
 
@@ -24,7 +23,6 @@ export default function More(props) {
   if (view === "documents") return <Documents onBack={back} />;
   if (view === "hygiene") return <Hygiene {...props} onBack={back} />;
   if (view === "training") return <Training {...props} onBack={back} />;
-  if (view === "allergens") return <Allergens {...props} onBack={back} />;
   if (view === "incidents") return <Incidents {...props} onBack={back} />;
   if (view === "history") return <History {...props} onBack={back} />;
   if (view === "manager") return <Manager {...props} onBack={back} />;
@@ -35,7 +33,7 @@ export default function More(props) {
       <p className="lead">Records, training, allergens and manager tools.</p>
       <div className="tile-grid">
         {ITEMS.map((it) => (
-          <button className="tile-card" key={it.id} onClick={() => setView(it.id)}>
+          <button className="tile-card" key={it.id} onClick={() => (it.href ? window.open(it.href, "_blank", "noopener") : setView(it.id))}>
             <div className="tile-icon">{it.icon}</div>
             <div className="tile-t">{it.title}</div>
             <div className="tile-d">{it.desc}</div>
